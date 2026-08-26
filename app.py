@@ -100,7 +100,7 @@ def list_documents():
     page = client.vector_stores.files.list(
         vector_store_id=VECTOR_STORE_ID, limit=100, order="desc"
     )
-    for vector_file in page.data():
+    for vector_file in page.data:
         source = client.files.retrieve(vector_file.id)
         documents.append(
             {
