@@ -223,7 +223,7 @@ if question:
             response_text = (
                 "Não foi possível consultar a base agora. "
                 f"Detalhe técnico: {exc}"
-            ) corrige listagem dos documentos
+            ) 
         st.markdown(response_text)
     st.session_state.messages.append(
         {"role": "assistant", "content": response_text}
