@@ -1,12 +1,14 @@
-import os, io, hashlib
-from typing import List, Dict, Any
+import os
+import time
+from io import BytesIO
+
 import streamlit as st
-import numpy as np
-from pypdf import PdfReader
 from dotenv import load_dotenv
 from openai import OpenAI
 
+
 load_dotenv()
+
 
 def cfg(name, default=None):
     try:
@@ -16,129 +18,213 @@ def cfg(name, default=None):
         pass
     return os.getenv(name, default)
 
-API_KEY = cfg('OPENAI_API_KEY')
-CHAT_MODEL = cfg('OPENAI_CHAT_MODEL', 'gpt-5.5')
-EMBED_MODEL = cfg('OPENAI_EMBEDDING_MODEL', 'text-embedding-3-small')
-ADMIN_PASSWORD = cfg('ADMIN_PASSWORD', '')
-TOP_K = int(cfg('TOP_K', '5'))
-CHUNK_SIZE = int(cfg('CHUNK_SIZE', '1400'))
-OVERLAP = int(cfg('CHUNK_OVERLAP', '250'))
 
-st.set_page_config(page_title='Oráculo da Fruticultura', page_icon='🌱', layout='wide')
-st.title('🌱 Oráculo da Fruticultura')
-st.caption('Assistente técnico com RAG e respostas fundamentadas em documentos.')
+API_KEY = cfg("OPENAI_API_KEY")
+VECTOR_STORE_ID = cfg("VECTOR_STORE_ID")
+CHAT_MODEL = cfg("OPENAI_CHAT_MODEL", "gpt-5.5")
+ADMIN_PASSWORD = cfg("ADMIN_PASSWORD", "")
+TOP_K = int(cfg("TOP_K", "5"))
 
-if not API_KEY:
-    st.error('Configure OPENAI_API_KEY em App settings → Secrets no Streamlit Cloud.')
+st.set_page_config(
+    page_title="Oráculo da Fruticultura", page_icon="🌱", layout="wide"
+)
+st.title("🌱 Oráculo da Fruticultura")
+st.caption("Assistente técnico com base documental privada e permanente.")
+
+missing = [
+    name
+    for name, value in {
+        "OPENAI_API_KEY": API_KEY,
+        "VECTOR_STORE_ID": VECTOR_STORE_ID,
+        "ADMIN_PASSWORD": ADMIN_PASSWORD,
+    }.items()
+    if not value
+]
+if missing:
+    st.error(
+        "Configuração incompleta. Adicione nos Secrets do Streamlit: "
+        + ", ".join(missing)
+        + "."
+    )
     st.stop()
+
 client = OpenAI(api_key=API_KEY)
 
-for key, value in {'messages': [], 'chunks': [], 'embeddings': None, 'admin_ok': False}.items():
-    if key not in st.session_state:
-        st.session_state[key] = value
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "admin_ok" not in st.session_state:
+    st.session_state.admin_ok = False
 
-def norm(t): return ' '.join((t or '').replace('\x00',' ').split())
 
-def split_text(text):
-    text = norm(text); out=[]; start=0
-    while start < len(text):
-        end=min(start+CHUNK_SIZE,len(text)); chunk=text[start:end]
-        if end < len(text):
-            p=chunk.rfind('. ')
-            if p > int(CHUNK_SIZE*0.55): end=start+p+1; chunk=text[start:end]
-        if chunk.strip(): out.append(chunk.strip())
-        if end >= len(text): break
-        start=max(0,end-OVERLAP)
-    return out
+SYSTEM = """Você é o Oráculo da Fruticultura, assistente técnico especializado em
+fruticultura tropical e subtropical. Responda prioritariamente com base nos
+documentos da base privada. Não invente doses, registros, legislação ou
+referências. Se os documentos não bastarem, diga isso claramente. Para
+defensivos, recomende verificar registro vigente, bula e orientação de
+profissional habilitado. Cite pelo nome os arquivos usados. Escreva em português
+do Brasil, de forma técnica, clara e objetiva."""
 
-def extract_pdf(f):
-    data=f.getvalue(); reader=PdfReader(io.BytesIO(data)); rec=[]
-    for n,page in enumerate(reader.pages,1):
-        text=norm(page.extract_text() or '')
-        if text: rec.append({'source':f.name,'page':n,'text':text,'hash':hashlib.sha256(data).hexdigest()})
-    return rec
 
-def build_chunks(files):
-    out=[]
-    for f in files:
-        for page in extract_pdf(f):
-            for i,ch in enumerate(split_text(page['text']),1):
-                out.append({'source':page['source'],'page':page['page'],'chunk':i,'text':ch})
-    return out
+def upload_pdf(uploaded_file):
+    """Envia um PDF à OpenAI e aguarda sua indexação no Vector Store."""
+    created = client.files.create(
+        file=(uploaded_file.name, BytesIO(uploaded_file.getvalue()), "application/pdf"),
+        purpose="assistants",
+    )
+    try:
+        vector_file = client.vector_stores.files.create(
+            vector_store_id=VECTOR_STORE_ID, file_id=created.id
+        )
+        for _ in range(120):
+            vector_file = client.vector_stores.files.retrieve(
+                vector_store_id=VECTOR_STORE_ID, file_id=created.id
+            )
+            if vector_file.status == "completed":
+                return created.id
+            if vector_file.status in {"failed", "cancelled"}:
+                detail = getattr(vector_file, "last_error", None)
+                raise RuntimeError(f"Falha na indexação: {detail or vector_file.status}")
+            time.sleep(1)
+        raise TimeoutError("A indexação demorou mais que o esperado.")
+    except Exception:
+        # Evita deixar um arquivo órfão caso a vinculação/indexação falhe.
+        try:
+            client.files.delete(created.id)
+        except Exception:
+            pass
+        raise
 
-def embed_texts(texts, batch=64):
-    vec=[]
-    for i in range(0,len(texts),batch):
-        r=client.embeddings.create(model=EMBED_MODEL,input=texts[i:i+batch],encoding_format='float')
-        vec.extend(x.embedding for x in r.data)
-    a=np.array(vec,dtype=np.float32); n=np.linalg.norm(a,axis=1,keepdims=True); n[n==0]=1
-    return a/n
 
-def retrieve(q):
-    r=client.embeddings.create(model=EMBED_MODEL,input=q,encoding_format='float')
-    v=np.array(r.data[0].embedding,dtype=np.float32); n=np.linalg.norm(v); v=v if n==0 else v/n
-    scores=st.session_state.embeddings @ v; idx=np.argsort(scores)[::-1][:TOP_K]
-    out=[]
-    for i in idx:
-        x=dict(st.session_state.chunks[int(i)]); x['score']=float(scores[int(i)]); out.append(x)
-    return out
+def list_documents():
+    documents = []
+    page = client.vector_stores.files.list(
+        vector_store_id=VECTOR_STORE_ID, limit=100, order="desc"
+    )
+    for vector_file in page.auto_paging_iter():
+        source = client.files.retrieve(vector_file.id)
+        documents.append(
+            {
+                "id": vector_file.id,
+                "name": source.filename,
+                "status": vector_file.status,
+            }
+        )
+    return documents
 
-SYSTEM='''Você é o Oráculo da Fruticultura, assistente técnico especializado em fruticultura tropical e subtropical. Responda prioritariamente com base no contexto documental. Não invente doses, registros, legislação ou referências. Se o contexto não bastar, diga isso claramente. Para defensivos, recomende verificar registro vigente, bula e orientação de profissional habilitado. Ao final, informe arquivo e página das fontes usadas. Escreva em português do Brasil, de forma técnica, clara e objetiva.'''
 
-def answer(q, results):
-    context='\n\n'.join([f"[FONTE {i}] {x['source']} | página {x['page']}\n{x['text']}" for i,x in enumerate(results,1)])
-    prompt=f"PERGUNTA:\n{q}\n\nCONTEXTO:\n{context}\n\nResponda fundamentando as afirmações nas fontes acima."
-    r=client.responses.create(model=CHAT_MODEL,instructions=SYSTEM,input=prompt)
-    return r.output_text
+def delete_document(file_id):
+    """Remove o documento do Vector Store e também da Files API."""
+    client.vector_stores.files.delete(
+        vector_store_id=VECTOR_STORE_ID, file_id=file_id
+    )
+    client.files.delete(file_id)
+
+
+def answer(question):
+    response = client.responses.create(
+        model=CHAT_MODEL,
+        instructions=SYSTEM,
+        input=question,
+        tools=[
+            {
+                "type": "file_search",
+                "vector_store_ids": [VECTOR_STORE_ID],
+                "max_num_results": TOP_K,
+            }
+        ],
+    )
+    return response.output_text
+
 
 with st.sidebar:
-    st.header('⚙️ Administração')
-    if ADMIN_PASSWORD:
-        pwd=st.text_input('Senha do administrador',type='password')
-        if st.button('Entrar como administrador',use_container_width=True):
-            st.session_state.admin_ok=(pwd==ADMIN_PASSWORD)
-            if not st.session_state.admin_ok: st.error('Senha incorreta.')
+    st.header("⚙️ Administração")
+
+    if not st.session_state.admin_ok:
+        with st.form("admin_login", clear_on_submit=True):
+            password = st.text_input("Senha do administrador", type="password")
+            login = st.form_submit_button(
+                "Entrar como administrador", use_container_width=True
+            )
+        if login:
+            st.session_state.admin_ok = password == ADMIN_PASSWORD
+            if st.session_state.admin_ok:
+                st.rerun()
+            st.error("Senha incorreta.")
     else:
-        st.warning('ADMIN_PASSWORD não configurada; upload aberto nesta sessão.')
-        st.session_state.admin_ok=True
+        st.success("Modo administrador ativo.")
+        if st.button("Sair do modo administrador", use_container_width=True):
+            st.session_state.admin_ok = False
+            st.rerun()
 
-    if st.session_state.admin_ok:
-        st.success('Modo administrador ativo.')
-        files=st.file_uploader('Base técnica — envie PDFs',type=['pdf'],accept_multiple_files=True)
-        if st.button('🔎 Indexar documentos',use_container_width=True):
-            if not files: st.warning('Envie pelo menos um PDF.')
+        files = st.file_uploader(
+            "Adicionar PDFs à base privada",
+            type=["pdf"],
+            accept_multiple_files=True,
+        )
+        if st.button("Enviar e indexar", use_container_width=True):
+            if not files:
+                st.warning("Selecione pelo menos um PDF.")
             else:
-                with st.spinner('Criando a base vetorial...'):
-                    chunks=build_chunks(files)
-                    if not chunks: st.error('Não foi possível extrair texto. PDFs digitalizados podem exigir OCR.')
-                    else:
-                        st.session_state.chunks=chunks
-                        st.session_state.embeddings=embed_texts([x['text'] for x in chunks])
-                        st.success(f'Base criada: {len(chunks)} trechos indexados.')
+                successes = 0
+                progress = st.progress(0)
+                for index, uploaded_file in enumerate(files, start=1):
+                    try:
+                        with st.spinner(f"Indexando {uploaded_file.name}..."):
+                            upload_pdf(uploaded_file)
+                        successes += 1
+                    except Exception as exc:
+                        st.error(f"{uploaded_file.name}: {exc}")
+                    progress.progress(index / len(files))
+                if successes:
+                    st.success(f"{successes} documento(s) indexado(s) permanentemente.")
+
+        st.subheader("Documentos da base")
+        try:
+            documents = list_documents()
+            if not documents:
+                st.caption("Nenhum documento indexado.")
+            for document in documents:
+                left, right = st.columns([4, 1])
+                left.caption(f"{document['name']} · {document['status']}")
+                if right.button(
+                    "Remover", key=f"remove_{document['id']}", type="secondary"
+                ):
+                    try:
+                        delete_document(document["id"])
+                        st.success(f"{document['name']} removido.")
+                        st.rerun()
+                    except Exception as exc:
+                        st.error(f"Não foi possível remover: {exc}")
+        except Exception as exc:
+            st.error(f"Não foi possível listar os documentos: {exc}")
+
     st.divider()
-    st.metric('Trechos indexados nesta sessão',len(st.session_state.chunks))
-    if st.button('🧹 Limpar conversa',use_container_width=True):
-        st.session_state.messages=[]; st.rerun()
+    if st.button("🧹 Limpar conversa", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
 
-if st.session_state.embeddings is None:
-    st.info('A base técnica ainda não foi indexada nesta sessão pelo administrador.')
 
-for m in st.session_state.messages:
-    with st.chat_message(m['role']): st.markdown(m['content'])
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
-q=st.chat_input('Pergunte sobre culturas, pragas, doenças, irrigação, adubação...')
-if q:
-    st.session_state.messages.append({'role':'user','content':q})
-    with st.chat_message('user'): st.markdown(q)
-    with st.chat_message('assistant'):
-        if st.session_state.embeddings is None:
-            ans='A base técnica ainda não foi carregada pelo administrador.'; st.markdown(ans)
-        else:
-            with st.spinner('Consultando a base técnica...'):
-                results=retrieve(q); ans=answer(q,results)
-            st.markdown(ans)
-            with st.expander('Trechos recuperados pelo RAG'):
-                for i,x in enumerate(results,1):
-                    st.markdown(f"**{i}. {x['source']} — página {x['page']} (similaridade {x['score']:.3f})**")
-                    st.write(x['text'])
-    st.session_state.messages.append({'role':'assistant','content':ans})
+question = st.chat_input(
+    "Pergunte sobre culturas, pragas, doenças, irrigação, adubação..."
+)
+if question:
+    st.session_state.messages.append({"role": "user", "content": question})
+    with st.chat_message("user"):
+        st.markdown(question)
+    with st.chat_message("assistant"):
+        try:
+            with st.spinner("Consultando a base técnica privada..."):
+                response_text = answer(question)
+        except Exception as exc:
+            response_text = (
+                "Não foi possível consultar a base agora. "
+                f"Detalhe técnico: {exc}"
+            )
+        st.markdown(response_text)
+    st.session_state.messages.append(
+        {"role": "assistant", "content": response_text}
+    )

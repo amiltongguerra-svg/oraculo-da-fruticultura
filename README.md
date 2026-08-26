@@ -1,25 +1,69 @@
-# Oráculo da Fruticultura — Versão 2
+# Oráculo da Fruticultura — base privada permanente
 
-Preparado para Streamlit Community Cloud.
+Aplicação Streamlit com OpenAI Responses API, `file_search` e Vector Stores.
 
-## Melhorias
-- Usa `st.secrets` no Streamlit Cloud e `.env` localmente.
-- Upload/indexação restritos por senha de administrador.
-- `.gitignore` impede publicação acidental de segredos.
-- RAG com PDFs, embeddings, fontes por arquivo/página e histórico da sessão.
+## O que mudou
+
+- A indexação temporária em memória foi removida.
+- Os PDFs são enviados diretamente à OpenAI e vinculados a um Vector Store permanente.
+- Somente o administrador autenticado pode enviar, listar e remover PDFs.
+- Usuários públicos podem consultar a base, mas não administrar documentos.
+- PDFs, chave da API, senha e ID do Vector Store não ficam no GitHub.
+- A remoção exclui o documento do Vector Store e da Files API, evitando arquivos órfãos.
+
+## Arquivos que podem ir ao GitHub
+
+- `app.py`
+- `requirements.txt`
+- `README.md`
+- `secrets.toml.example` (contém apenas exemplos, nunca valores reais)
+
+Nunca envie ao GitHub:
+
+- PDFs da base técnica;
+- `.streamlit/secrets.toml`;
+- `.env` ou qualquer arquivo com chaves e senhas.
+
+## Secrets necessários no Streamlit
+
+Em **App settings → Secrets**, configure:
+
+```toml
+OPENAI_API_KEY = "sua-chave-existente"
+VECTOR_STORE_ID = "vs_..."
+ADMIN_PASSWORD = "uma-senha-forte-e-exclusiva"
+OPENAI_CHAT_MODEL = "gpt-5.5"
+TOP_K = "5"
+```
+
+O `OPENAI_API_KEY` existente deve ser reutilizado. Não copie o valor para o código.
+
+## Como obter o VECTOR_STORE_ID
+
+Crie um único Vector Store no projeto correto da OpenAI e copie somente o ID
+iniciado por `vs_`. Salve esse ID nos Secrets do Streamlit. O aplicativo não cria
+um novo Vector Store a cada reinicialização, portanto a base permanece disponível.
 
 ## Publicação
-1. Envie estes arquivos a um repositório GitHub.
-2. Não envie `.env` nem `.streamlit/secrets.toml`.
-3. No Streamlit Community Cloud, selecione `app.py` como arquivo principal.
-4. Em **App settings → Secrets**, copie o conteúdo de `.streamlit/secrets.toml.example` e troque a chave e a senha.
-5. Faça o deploy.
+
+1. Substitua os arquivos do projeto pelas versões atualizadas.
+2. Confirme que `.streamlit/secrets.toml`, `.env` e PDFs estão ignorados pelo Git.
+3. Atualize os Secrets no Streamlit Cloud.
+4. Reinicie/reimplante o aplicativo.
+5. Entre como administrador, envie um PDF de teste e faça uma consulta.
 
 ## Execução local
+
+Crie `.streamlit/secrets.toml` com os valores reais (esse arquivo não deve ser
+versionado) e execute:
+
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## Limitação desta versão
-A base vetorial fica em memória. Se o app reiniciar, o administrador deverá indexar os PDFs novamente. Para uso comercial, o próximo passo é persistir documentos e embeddings em PostgreSQL/pgvector, Qdrant ou solução equivalente.
+## Privacidade
+
+Os documentos deixam de existir apenas na memória efêmera do Streamlit e passam
+a ficar no projeto da OpenAI associado à chave utilizada. Restrinja o acesso ao
+projeto/chave da OpenAI e ao painel do Streamlit às pessoas autorizadas.
