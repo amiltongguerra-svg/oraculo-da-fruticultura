@@ -100,7 +100,7 @@ def list_documents():
     page = client.vector_stores.files.list(
         vector_store_id=VECTOR_STORE_ID, limit=100, order="desc"
     )
-    for vector_file in page.auto_paging_iter():
+    for vector_file in page.data():
         source = client.files.retrieve(vector_file.id)
         documents.append(
             {
@@ -223,7 +223,7 @@ if question:
             response_text = (
                 "Não foi possível consultar a base agora. "
                 f"Detalhe técnico: {exc}"
-            )
+            ) corrige listagem dos documentos
         st.markdown(response_text)
     st.session_state.messages.append(
         {"role": "assistant", "content": response_text}
