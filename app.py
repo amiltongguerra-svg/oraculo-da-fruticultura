@@ -23,7 +23,8 @@ API_KEY = cfg("OPENAI_API_KEY")
 VECTOR_STORE_ID = cfg("VECTOR_STORE_ID")
 CHAT_MODEL = cfg("OPENAI_CHAT_MODEL", "gpt-5.5")
 ADMIN_PASSWORD = cfg("ADMIN_PASSWORD", "")
-TOP_K = int(cfg("TOP_K", "5"))
+TOP_K = int(cfg("TOP_K", "5")) 
+PUBLIC_SOURCE_DOMAINS = ["embrapa.br"]
 
 st.set_page_config(
     page_title="Oráculo da Fruticultura", page_icon="🌱", layout="wide"
@@ -58,7 +59,8 @@ if "admin_ok" not in st.session_state:
 
 SYSTEM = """Você é o Oráculo da Fruticultura, assistente técnico especializado em
 fruticultura tropical e subtropical. Responda prioritariamente com base nos
-documentos da base privada. Não invente doses, registros, legislação ou
+documentos da base privada.
+Quando  perguntar citar  Embrapa ou pedir informação atual, consulte também fontes públicas oficiais da Embrapa. Não invente doses, registros, legislação ou
 referências. Se os documentos não bastarem, diga isso claramente. Para
 defensivos, recomende verificar registro vigente, bula e orientação de
 profissional habilitado. Cite pelo nome os arquivos usados. Escreva em português
@@ -121,27 +123,72 @@ def delete_document(file_id):
 
 
 def answer(question):
-    response = client.responses.create(
-        model=CHAT_MODEL,
-        instructions=SYSTEM,
-        input=question,
-        tools=[
+    public_search_terms = (
+        "embrapa",
+        "fonte pública",
+        "fontes públicas",
+        "fonte oficial",
+        "fontes oficiais",
+        "informação atual",
+        "informações atuais",
+        "recomendação atual",
+        "recomendações atuais",
+    )
+    require_public_search = any(
+        term in question.casefold() for term in public_search_terms
+    )
+
+    request = {
+        "model": CHAT_MODEL,
+        "instructions": SYSTEM,
+        "input": question,
+        "tools": [
             {
                 "type": "file_search",
                 "vector_store_ids": [VECTOR_STORE_ID],
                 "max_num_results": TOP_K,
-            }
+            },
+            {
+                "type": "web_search",
+                "filters": {"allowed_domains": PUBLIC_SOURCE_DOMAINS},
+                "search_context_size": "medium",
+            },
         ],
-    )
-    answer = response.output_text
-    sources = [getattr(annotation, "filename", None) for item in response.output for content in getattr(item, "content", []) for annotation in getattr(content, "annotations", []) if getattr(annotation, "type", "") == "file_citation"]
-    sources = list(dict.fromkeys(filter(None, sources)))
+    }
+    if require_public_search:
+        request["tool_choice"] = {"type": "web_search"}
 
-    if sources:
-        answer += "\n\n**Fontes consultadas:**\n" + "\n".join(f"- {filename}" for filename in sources)
+    response = client.responses.create(**request)
+    answer = response.output_text
+    file_sources = []
+    web_sources = []
+
+    for item in response.output:
+        for content in getattr(item, "content", []):
+            for annotation in getattr(content, "annotations", []):
+                annotation_type = getattr(annotation, "type", "")
+                if annotation_type == "file_citation":
+                    filename = getattr(annotation, "filename", None)
+                    if filename and filename not in file_sources:
+                        file_sources.append(filename)
+                elif annotation_type == "url_citation":
+                    url = getattr(annotation, "url", None)
+                    title = getattr(annotation, "title", None) or url
+                    if url and url not in [source[1] for source in web_sources]:
+                        web_sources.append((title, url))
+
+    if file_sources or web_sources:
+        answer += "\n\n**Fontes consultadas:**\n"
+        answer += "\n".join(
+            f"- Documento privado: `{filename}`" for filename in file_sources
+        )
+        if file_sources and web_sources:
+            answer += "\n"
+        answer += "\n".join(
+            f"- Fonte pública: [{title}]({url})" for title, url in web_sources
+        )
 
     return answer
-
 with st.sidebar:
     st.header("⚙️ Administração")
 
