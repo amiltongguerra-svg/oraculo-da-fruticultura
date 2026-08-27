@@ -134,22 +134,13 @@ def answer(question):
         ],
     )
     answer = response.output_text
-    sources = []
-    
-    for item in response.output:
-    for content in getattr(item, "content", []):
-        for annotation in getattr(content, "annotations", []):
-            if getattr(annotation, "type", "") == "file_citation":
-                filename = getattr(annotation, "filename", None)
-                if filename and filename not in sources:
-                    sources.append(filename)
-    
-    if sources:
-    answer += "\n\n**Fontes consultadas:**\n"
-    answer += "\n".join(f"- {filename}" for filename in sources)
-    
-    return answer
+    sources = [getattr(annotation, "filename", None) for item in response.output for content in getattr(item, "content", []) for annotation in getattr(content, "annotations", []) if getattr(annotation, "type", "") == "file_citation"]
+    sources = list(dict.fromkeys(filter(None, sources)))
 
+    if sources:
+        answer += "\n\n**Fontes consultadas:**\n" + "\n".join(f"- {filename}" for filename in sources)
+
+    return answer
 
 with st.sidebar:
     st.header("⚙️ Administração")
