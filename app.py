@@ -135,7 +135,7 @@ def list_documents():
 
 
 def delete_document(file_id):
-    """Remove o documento do Vector Store e também da Files API."""
+"""Remove o documento do Vector Store e também da Files API."""
     client.vector_stores.files.delete(
         vector_store_id=VECTOR_STORE_ID, file_id=file_id
     )
