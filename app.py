@@ -157,22 +157,28 @@ def answer(question):
         term in question.casefold() for term in public_search_terms
     )
 
-    request = {
-        "model": CHAT_MODEL,
-        "instructions": SYSTEM,
-        "input": question,
-        "tools": [
-            {
-                "type": "file_search",
-                "vector_store_ids": [VECTOR_STORE_ID],
-                "max_num_results": TOP_K,
-            },
+        tools = [
+        {
+            "type": "file_search",
+            "vector_store_ids": [VECTOR_STORE_ID],
+            "max_num_results": TOP_K,
+        }
+    ]
+
+    if require_public_search:
+        tools.append(
             {
                 "type": "web_search",
                 "filters": {"allowed_domains": PUBLIC_SOURCE_DOMAINS},
                 "search_context_size": "medium",
-            },
-        ],
+            }
+        )
+
+    request = {
+        "model": CHAT_MODEL,
+        "instructions": SYSTEM,
+        "input": question,
+        "tools": tools,
     }
    
     response = client.responses.create(**request)
