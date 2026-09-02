@@ -225,7 +225,7 @@ def answer(question):
             f"- Fonte pública: [{title}]({url})" for title, url in web_sources
         )
 
-     return answer
+    return answer
 with st.sidebar:
     st.header("⚙️ Administração")
 
