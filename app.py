@@ -183,31 +183,31 @@ def answer(question):
                     if filename and filename not in file_sources:
                         file_sources.append(filename)
                 elif annotation_type == "url_citation":            
-        url = getattr(annotation, "url", None)
-        
-        source_names = {
-            "embrapa.br": "Embrapa",
-            "iac.sp.gov.br": "IAC — Instituto Agronômico",
-            "idrparana.pr.gov.br": "IDR-Paraná / IAPAR",
-            "incaper.es.gov.br": "Incaper",
-            "empaer.mt.gov.br": "Empaer",
-            "epagri.sc.gov.br": "Epagri",
-            "epamig.br": "EPAMIG",
-            "ipa.br": "IPA",
-            "emparn.rn.gov.br": "EMPARN",
-            "scielo.br": "SciELO",
-        }
-        
-        title = getattr(annotation, "title", None) or "Fonte pública"
-        
-        if url:
-            for domain, source_name in source_names.items():
-                if domain in url:
-                    title = source_name
-                    break
-        
-        if url and url not in [source[1] for source in web_sources]:
-            web_sources.append((title, url))
+                    url = getattr(annotation, "url", None)
+            
+            source_names = {
+                "embrapa.br": "Embrapa",
+                "iac.sp.gov.br": "IAC — Instituto Agronômico",
+                "idrparana.pr.gov.br": "IDR-Paraná / IAPAR",
+                "incaper.es.gov.br": "Incaper",
+                "empaer.mt.gov.br": "Empaer",
+                "epagri.sc.gov.br": "Epagri",
+                "epamig.br": "EPAMIG",
+                "ipa.br": "IPA",
+                "emparn.rn.gov.br": "EMPARN",
+                "scielo.br": "SciELO",
+            }
+            
+            title = getattr(annotation, "title", None) or "Fonte pública"
+            
+            if url:
+                for domain, source_name in source_names.items():
+                    if domain in url:
+                        title = source_name
+                        break
+            
+            if url and url not in [source[1] for source in web_sources]:
+                web_sources.append((title, url))
     if file_sources or web_sources:
         answer += "\n\n**Fontes consultadas:**\n"
         answer += "\n".join(
@@ -219,7 +219,7 @@ def answer(question):
             f"- Fonte pública: [{title}]({url})" for title, url in web_sources
         )
 
-            return answer
+     return answer
 with st.sidebar:
     st.header("⚙️ Administração")
 
