@@ -81,14 +81,9 @@ As fontes utilizadas devem aparecer exclusivamente na seção
 "Fontes consultadas", ao final da resposta.
 
 Escreva em português do Brasil, de forma técnica, clara e objetiva."""
-IMPORTANTE: não coloque nomes de documentos, referências, URLs, links ou
-citações no corpo da resposta. Apresente a resposta técnica normalmente.
-As fontes utilizadas serão apresentadas automaticamente pelo sistema,
-exclusivamente na seção "Fontes consultadas", ao final da resposta.
 
-Escreva em português do Brasil, de forma técnica, clara e objetiva."""
 def upload_pdf(uploaded_file):
-    """Envia um PDF à OpenAI e aguarda sua indexação no Vector Store."""
+   # Envia um PDF à OpenAI e aguarda sua indexação no Vector Store.
     created = client.files.create(
         file=(uploaded_file.name, BytesIO(uploaded_file.getvalue()), "application/pdf"),
         purpose="assistants",
