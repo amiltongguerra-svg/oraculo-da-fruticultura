@@ -169,9 +169,7 @@ def answer(question):
             },
         ],
     }
-    if require_public_search:
-        request["tool_choice"] = {"type": "web_search"}
-
+   
     response = client.responses.create(**request)
     answer = response.output_text
     file_sources = []
