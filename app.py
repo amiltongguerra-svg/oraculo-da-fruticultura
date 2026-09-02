@@ -75,11 +75,10 @@ Se as fontes disponíveis não forem suficientes, informe isso claramente.
 Para defensivos agrícolas, recomende verificar registro vigente, bula e
 orientação de profissional habilitado.
 
-IMPORTANTE: não coloque nomes de documentos, referências, URLs, links ou
-citações no corpo da resposta. Apresente a resposta técnica normalmente.
-As fontes utilizadas devem aparecer exclusivamente na seção
-"Fontes consultadas", ao final da resposta.
-
+IMPORTANTE: não escreva, gere ou crie uma seção chamada "Fontes consultadas".
+Não coloque nomes de documentos, referências, URLs, links ou citações no corpo da resposta.
+Apresente somente a resposta técnica. O sistema acrescentará automaticamente
+as fontes realmente consultadas ao final da resposta.
 Escreva em português do Brasil, de forma técnica, clara e objetiva."""
 
 def upload_pdf(uploaded_file):
