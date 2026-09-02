@@ -182,7 +182,7 @@ request = {
 }
    
 response = client.responses.create(**request)
-    answer = response.output_text
+answer = response.output_text
     answer = "\n".join(
         line for line in answer.splitlines()
         if not line.strip().lower().startswith(("consultas utilizadas:", "base técnica utilizada:"))
