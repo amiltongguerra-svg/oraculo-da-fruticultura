@@ -146,6 +146,12 @@ def answer(question):
         "informações atuais",
         "recomendação atual",
         "recomendações atuais",
+                "IAC",
+        "IAPAR",
+        "IDR-Parana",
+        "EPAGRI",
+        "EMPAER",
+        "INCAPER",
     )
     require_public_search = any(
         term in question.casefold() for term in public_search_terms
