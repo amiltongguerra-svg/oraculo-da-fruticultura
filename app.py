@@ -174,82 +174,91 @@ def answer(question):
         term in question.casefold() for term in public_search_terms
     )
 
-    tools = [
-    {
-        "type": "file_search",
-        "vector_store_ids": [VECTOR_STORE_ID],
-        "max_num_results": TOP_K,
-    }
-]
-
-if require_public_search:
-    tools.append(
+       tools = [
         {
-            "type": "web_search",
-            "filters": {"allowed_domains": PUBLIC_SOURCE_DOMAINS},
-            "search_context_size": "medium",
+            "type": "file_search",
+            "vector_store_ids": [VECTOR_STORE_ID],
+            "max_num_results": TOP_K,
         }
+    ]
+
+    if require_public_search:
+        tools.append(
+            {
+                "type": "web_search",
+                "filters": {"allowed_domains": PUBLIC_SOURCE_DOMAINS},
+                "search_context_size": "medium",
+            }
+        )
+
+    request = {
+        "model": CHAT_MODEL,
+        "instructions": SYSTEM,
+        "input": question,
+        "tools": tools,
+    }
+
+    response = client.responses.create(**request)
+    answer = response.output_text
+    answer = "\n".join(
+        line for line in answer.splitlines()
+        if not line.strip().lower().startswith(
+            ("consultas utilizadas:", "base técnica utilizada:")
+        )
     )
 
-request = {
-    "model": CHAT_MODEL,
-    "instructions": SYSTEM,
-    "input": question,
-    "tools": tools,
-}
-response = client.responses.create(**request)
-answer = response.output_text
-answer = "\n".join(
-    line for line in 
-answer.splitlines()
-        if not 
-line.strip().lower().startswith(("consultas utilizadas:", "base técnica utilizada:"))
-)
     file_sources = []
     web_sources = []
-
     for item in response.output:
         for content in getattr(item, "content", []):
             for annotation in getattr(content, "annotations", []):
                 annotation_type = getattr(annotation, "type", "")
                 url = None
+
                 if annotation_type == "file_citation":
                     filename = getattr(annotation, "filename", None)
                     if filename and filename not in file_sources:
                         file_sources.append(filename)
-                elif annotation_type == "url_citation":            
+
+                elif annotation_type == "url_citation":
                     url = getattr(annotation, "url", None)
-            
-            source_names = {
-                "embrapa.br": "Embrapa",
-                "iac.sp.gov.br": "IAC — Instituto Agronômico",
-                "idrparana.pr.gov.br": "IDR-Paraná / IAPAR",
-                "incaper.es.gov.br": "Incaper",
-                "empaer.mt.gov.br": "Empaer",
-                "epagri.sc.gov.br": "Epagri",
-                "epamig.br": "EPAMIG",
-                "ipa.br": "IPA",
-                "emparn.rn.gov.br": "EMPARN",
-                "scielo.br": "SciELO",
-            }
-            
-            title = getattr(annotation, "title", None) or "Fonte pública"
-            
-            if url:
-                for domain, source_name in source_names.items():
-                    if domain in url:
-                        title = source_name
-                        break
-            
-            if url and url not in [source[1] for source in web_sources]:
-                web_sources.append((title, url))
+
+                    source_names = {
+                        "embrapa.br": "Embrapa",
+                        "iac.sp.gov.br": "IAC - Instituto Agronômico",
+                        "idrparana.pr.gov.br": "IDR-Paraná / IAPAR",
+                        "incaper.es.gov.br": "Incaper",
+                        "empaer.mt.gov.br": "Empaer",
+                        "epagri.sc.gov.br": "Epagri",
+                        "epamig.br": "EPAMIG",
+                        "ipa.br": "IPA",
+                        "emparn.rn.gov.br": "EMPARN",
+                        "scielo.br": "SciELO",
+                    }
+
+                    title = getattr(annotation, "title", None) or "Fonte pública"
+
+                    if url:
+                        for domain, source_name in source_names.items():
+                            if domain in url:
+                                title = source_name
+                                break
+
+                        if url not in [source[1] for source in web_sources]:
+                            web_sources.append((title, url))
+
     if file_sources or web_sources:
         answer += "\n\n**Fontes consultadas:**\n"
+
+    if file_sources:
         answer += "\n".join(
-            f"- Documento privado: `{filename}`" for filename in file_sources
+            f"- Documento privado: {filename}" for filename in file_sources
         )
-        if file_sources and web_sources:
-            answer += "\n"
+
+    if file_sources and web_sources:
+        answer += "\n"
+
+    if web_sources:
         answer += "\n".join(
             f"- Fonte pública: [{title}]({url})" for title, url in web_sources
         )
