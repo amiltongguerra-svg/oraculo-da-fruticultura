@@ -174,7 +174,7 @@ def answer(question):
         term in question.casefold() for term in public_search_terms
     )
 
-       tools = [
+    tools = [
         {
             "type": "file_search",
             "vector_store_ids": [VECTOR_STORE_ID],
