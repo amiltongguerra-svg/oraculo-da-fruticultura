@@ -24,7 +24,7 @@ VECTOR_STORE_ID = cfg("VECTOR_STORE_ID")
 CHAT_MODEL = cfg("OPENAI_CHAT_MODEL", "gpt-5.5")
 ADMIN_PASSWORD = cfg("ADMIN_PASSWORD", "")
 TOP_K = int(cfg("TOP_K", "5")) 
-PUBLIC_SOURCE_DOMAINS = ["embrapa.br", "scielo.br", "edu.br", "iac.sp.gov.br", "idrparana.pr.gov.br", "incaper.es.gov.br", "empaer.mt.gov.br", "epagri.sc.gov.br", "epamig.br", "ipa.br", "emparn.rn.gov.br"]
+PUBLIC_SOURCE_DOMAINS = ["embrapa.br", "scielo.br", "edu.br", "iac.sp.gov.br", "idrparana.pr.gov.br", "incaper.es.gov.br", "empaer.mt.gov.br", "epagri.sc.gov.br", "epamig.br", "ipa.br", "emparn.rn.gov.br", "Pesagro.rj.gov.br", "Empaern.pb.gov.br",]
 st.set_page_config(
     page_title="Oráculo da Fruticultura", page_icon="🌱", layout="wide"
 )
@@ -152,6 +152,23 @@ def answer(question):
         "EPAGRI",
         "EMPAER",
         "INCAPER",
+                "SciELO",
+        "universidade pública",
+        "universidades públicas",
+        "universidade federal",
+        "universidade estadual",
+        "artigo científico",
+        "artigos científicos",
+        "pesquisa científica",
+        "revista científica",
+        "Google Scholar",
+        "EMBRAPA",
+        "EPAMIG",
+        "PESAGRO-RIO",
+        "AGRAER",
+        "IPA",
+        "EMEPA",
+        "EMATER",
     )
     require_public_search = any(
         term in question.casefold() for term in public_search_terms
