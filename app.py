@@ -264,7 +264,7 @@ def answer(question):
         ) 
 
     return answer
-   with st.sidebar:
+with st.sidebar:
     st.header("⚙️ Administração")
 
     if not st.session_state.admin_ok:
