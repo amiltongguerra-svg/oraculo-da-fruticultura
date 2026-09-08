@@ -236,7 +236,7 @@ def answer(question):
                         "scielo.br": "SciELO",
                     }
 
-                               title = getattr(annotation, "title", None) or "Fonte pública"
+                    title = getattr(annotation, "title", None) or "Fonte pública"
 
             if url:
                 for domain, source_name in source_names.items():
@@ -244,7 +244,7 @@ def answer(question):
                         title = source_name
                         break
 
-                if url and title not in [source[0] for source in web_sources]:
+    if url and title not in [source[0] for source in web_sources]:
                     web_sources.append((title, url))
 
     if file_sources or web_sources:
