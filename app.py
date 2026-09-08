@@ -261,7 +261,7 @@ def answer(question):
     if web_sources:
         answer += "\n".join(
             f"- Fonte pública: [{title}]({url})" for title, url in web_sources
-        )
+        ) 
 
     return answer
    with st.sidebar:
