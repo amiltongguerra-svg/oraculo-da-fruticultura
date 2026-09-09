@@ -210,11 +210,10 @@ def answer(question):
     file_sources = []
     web_sources = []
     for item in response.output:
-    for content in getattr(item, "content", []):
-    for annotation in getattr(content, "annotations", []):
-        annotation_type = getattr(annotation, "type", "")
-        url = None
-
+        for content in getattr(item, "content", []):
+                for annotation in getattr(content, "annotations", []):
+            annotation_type = getattr(annotation, "type", "")
+            url = None
         if annotation_type == "file_citation":
             filename = getattr(annotation, "filename", None)
             if filename and filename not in file_sources:
