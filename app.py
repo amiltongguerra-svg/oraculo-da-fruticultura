@@ -26,7 +26,7 @@ ADMIN_PASSWORD = cfg("ADMIN_PASSWORD", "")
 TOP_K = int(cfg("TOP_K", "5")) 
 PUBLIC_SOURCE_DOMAINS = ["embrapa.br", "scielo.br", "edu.br", "iac.sp.gov.br", "idrparana.pr.gov.br", "incaper.es.gov.br", "empaer.mt.gov.br", "epagri.sc.gov.br", "epamig.br", "ipa.br", "emparn.rn.gov.br", "Pesagro.rj.gov.br", "Empaern.pb.gov.br",]
 st.set_page_config(
-    page_title="Oráculo da Fruticultura", page_icon="🌱", layout="wide"
+  page_title="Oráculo da Fruticultura", page_icon="🌱", layout="wide"
 )
 st.title("🌱 Oráculo da Fruticultura")
 st.caption("Assistente técnico com base documental privada e permanente.")
