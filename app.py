@@ -1,7 +1,7 @@
 import os
 import time
 from io import BytesIO
-import based64
+import base64
 
 import streamlit as st
 from dotenv import load_dotenv
