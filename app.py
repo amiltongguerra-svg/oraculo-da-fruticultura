@@ -377,14 +377,24 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 
-uploaded_image = st.file_uploader(
-    "📷 Envie uma foto para diagnóstico",
-    type=["jpg", "jpeg", "png"]
+image_source = st.radio(
+    "📷 Como deseja enviar a imagem?",
+    ["Tirar foto com a câmera", "Enviar foto da galeria"],
+    horizontal=True
 )
+
+uploaded_image = None
+
+if image_source == "Tirar foto com a câmera":
+    uploaded_image = st.camera_input("Tire uma foto para diagnóstico")
+else:
+    uploaded_image = st.file_uploader(
+        "Envie uma foto para diagnóstico",
+        type=["jpg", "jpeg", "png"]
+    )
 
 if uploaded_image is not None:
     st.image(uploaded_image, caption="Imagem enviada para análise")
-
 question = st.chat_input(
     "Pergunte sobre culturas, pragas, doenças, irrigação, adubação..."
 )
