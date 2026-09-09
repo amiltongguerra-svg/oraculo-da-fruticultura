@@ -142,6 +142,12 @@ def analyze_image(uploaded_image, question="Analise esta imagem de uma planta ou
 
     response = client.responses.create(
         model=CHAT_MODEL,
+        tools=[
+    {
+        "type": "file_search",
+        "vector_store_ids": [VECTOR_STORE_ID],
+    }
+],
         input=[
             {
                 "role": "user",
@@ -149,12 +155,16 @@ def analyze_image(uploaded_image, question="Analise esta imagem de uma planta ou
                     {
                         "type": "input_text",
                         "text": (
-                            question
-                            + "\nFaça uma análise agronômica cuidadosa da imagem. "
-                            "Indique o que é visível, as causas prováveis e as medidas "
-                            "de manejo recomendadas. Não trate o diagnóstico visual "
-                            "como confirmação laboratorial quando houver incerteza."
-                        ),
+                   question
++ "\nFaça uma análise agronômica cuidadosa da imagem. "
+"Indique o que é visível, as causas prováveis e as medidas "
+"de manejo recomendadas. Não trate o diagnóstico visual "
+"como confirmação laboratorial quando houver incerteza. "
+"Consulte também a base documental privada disponível por meio do file_search. "
+"Priorize as informações encontradas nessa base quando forem pertinentes. "
+"Não invente referências. "
+"Ao final da resposta, crie uma seção chamada 'Fontes consultadas' "
+"e informe somente os documentos efetivamente utilizados na resposta."                        ),
                     },
                     {
                         "type": "input_image",
