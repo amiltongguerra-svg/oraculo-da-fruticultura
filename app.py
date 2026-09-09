@@ -223,18 +223,18 @@ def answer(question):
                 elif annotation_type == "url_citation":
                     url = getattr(annotation, "url", None)
 
-                        source_names = {
-                            "embrapa.br": "Embrapa",
-                            "iac.sp.gov.br": "IAC - Instituto Agronômico",
-                            "idrparana.pr.gov.br": "IDR-Paraná / IAPAR",
-                            "incaper.es.gov.br": "Incaper",
-                            "empaer.mt.gov.br": "Empaer",
-                            "epagri.sc.gov.br": "Epagri",
-                            "epamig.br": "EPAMIG",
-                            "ipa.br": "IPA",
-                            "emparn.rn.gov.br": "EMPARN",
-                            "scielo.br": "SciELO",
-                        }
+                    source_names = {
+                        "embrapa.br": "Embrapa",
+                        "iac.sp.gov.br": "IAC - Instituto Agronômico",
+                        "idrparana.pr.gov.br": "IDR-Paraná / IAPAR",
+                        "incaper.es.gov.br": "Incaper",
+                        "empaer.mt.gov.br": "Empaer",
+                        "epagri.sc.gov.br": "Epagri",
+                        "epamig.br": "EPAMIG",
+                        "ipa.br": "IPA",
+                        "emparn.rn.gov.br": "EMPARN",
+                        "scielo.br": "SciELO",
+                    }
 
                     title = getattr(annotation, "title", None) or "Fonte pública"
     
