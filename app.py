@@ -220,7 +220,7 @@ def answer(question):
                     if filename and filename not in file_sources:
                         file_sources.append(filename)
 
-                           elif annotation_type == "url_citation":
+                elif annotation_type == "url_citation":
                 url = getattr(annotation, "url", None)
 
                 source_names = {
