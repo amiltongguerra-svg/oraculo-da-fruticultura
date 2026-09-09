@@ -56,7 +56,30 @@ if "messages" not in st.session_state:
 if "admin_ok" not in st.session_state:
     st.session_state.admin_ok = False
 
+st.markdown("""
+<style>
+@media (max-width: 768px) {
+    .block-container {
+        padding-top: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 
+    h1 {
+        font-size: 2rem !important;
+    }
+
+    div[data-testid="stImage"] img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .stButton button {
+        width: 100%;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
 
 
 SYSTEM = """Você é o Oráculo da Fruticultura, assistente técnico especializado em
