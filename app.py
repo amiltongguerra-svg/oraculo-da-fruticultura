@@ -1,6 +1,7 @@
 import os
 import time
 from io import BytesIO
+import based64
 
 import streamlit as st
 from dotenv import load_dotenv
@@ -134,7 +135,37 @@ def delete_document(file_id):
     )
     client.files.delete(file_id)
 
+def analyze_image(uploaded_image, question="Analise esta imagem de uma planta ou fruto."):
+    image_bytes = uploaded_image.getvalue()
+    image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+    mime_type = uploaded_image.type or "image/jpeg"
 
+    response = client.responses.create(
+        model=CHAT_MODEL,
+        input=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "input_text",
+                        "text": (
+                            question
+                            + "\nFaça uma análise agronômica cuidadosa da imagem. "
+                            "Indique o que é visível, as causas prováveis e as medidas "
+                            "de manejo recomendadas. Não trate o diagnóstico visual "
+                            "como confirmação laboratorial quando houver incerteza."
+                        ),
+                    },
+                    {
+                        "type": "input_image",
+                        "image_url": f"data:{mime_type};base64,{image_base64}",
+                    },
+                ],
+            }
+        ],
+    )
+
+    return response.output_text
 def answer(question):
     public_search_terms = (
         "embrapa",
@@ -335,9 +366,30 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+uploaded_image = st.file_uploader(
+    "📷 Envie uma foto para diagnóstico",
+    type=["jpg", "jpeg", "png"]
+)
+
+if uploaded_image is not None:
+    st.image(uploaded_image, caption="Imagem enviada para análise")
+
 question = st.chat_input(
     "Pergunte sobre culturas, pragas, doenças, irrigação, adubação..."
 )
+
+if uploaded_image is not None and not question:
+    with st.chat_message("assistant"):
+        try:
+            with st.spinner("🔎 Analisando a fotografia..."):
+                response_text = analyze_image(uploaded_image)
+        except Exception as exc:
+            response_text = (
+                "Não foi possível analisar a imagem agora. "
+                f"Detalhe técnico: {exc}"
+            )
+
+        st.markdown(response_text)
 if question:
     st.session_state.messages.append({"role": "user", "content": question})
     with st.chat_message("user"):
