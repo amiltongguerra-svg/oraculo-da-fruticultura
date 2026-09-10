@@ -198,9 +198,13 @@ def analyze_image(uploaded_image, question="Analise esta imagem de uma planta ou
 "## 📚 Fontes consultadas\n"
 "Esta deve ser obrigatoriamente a última seção da resposta. "
 "Informe somente os documentos efetivamente utilizados na resposta."
-                            "type": "input_image",
-                        "image_url": f"data:{mime_type};base64,{image_base64}",
-                    },
+                                            ),
+            },
+            {
+                "type": "input_image",
+                "image_url": f"data:{mime_type};base64,{image_base64}",
+            },
+                                              },
                 ],
             }
         ],
