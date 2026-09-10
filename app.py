@@ -209,7 +209,7 @@ def analyze_image(uploaded_image, question="Analise esta imagem de uma planta ou
     )
     
     return response.output_text
-def answer(question)
+ def answer(question):
     public_search_terms = (
         "embrapa",
         "fonte pública",
