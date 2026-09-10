@@ -28,6 +28,44 @@ TOP_K = int(cfg("TOP_K", "5"))
 PUBLIC_SOURCE_DOMAINS = ["embrapa.br", "scielo.br", "edu.br", "iac.sp.gov.br", "idrparana.pr.gov.br", "incaper.es.gov.br", "empaer.mt.gov.br", "epagri.sc.gov.br", "epamig.br", "ipa.br", "emparn.rn.gov.br", "Pesagro.rj.gov.br", "Empaern.pb.gov.br",]
 st.set_page_config(
   page_title="Oráculo da Fruticultura", page_icon="🌱", layout="wide"
+) st.markdown(
+    """
+    <style>
+    @media (max-width: 768px) {
+
+        .block-container {
+            padding-top: 1rem;
+            padding-left: 0.8rem;
+            padding-right: 0.8rem;
+            padding-bottom: 5rem;
+        }
+
+        h1 {
+            font-size: 1.75rem !important;
+            line-height: 1.2 !important;
+        }
+
+        div[data-testid="stImage"] img {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+
+        div[data-testid="stChatMessage"] {
+            padding-left: 0.2rem;
+            padding-right: 0.2rem;
+        }
+
+        div[data-testid="stChatInput"] {
+            font-size: 16px;
+        }
+
+        p, li {
+            line-height: 1.45;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
 )
 st.title("🌱 Oráculo da Fruticultura")
 st.caption("Assistente técnico com base documental privada e permanente.")
