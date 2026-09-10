@@ -497,6 +497,9 @@ else:
         "Envie uma foto para diagnóstico",
         type=["jpg", "jpeg", "png"]
     )
+    question = st.chat_input(
+    "Pergunte sobre culturas, pragas, doenças, irrigação, adubação..."
+)
 if uploaded_image is not None:
     analisar_foto = st.button("🔎 Analisar foto")
 
