@@ -56,7 +56,30 @@ st.markdown(
         div[data-testid="stChatMessage"] {
             padding-left: 0.2rem;
             padding-right: 0.2rem;
-        }
+        }st.markdown("""
+<style>
+@media (max-width: 768px) {
+    .block-container {
+        padding-top: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    h1 {
+        font-size: 2rem !important;
+    }
+
+    div[data-testid="stImage"] img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .stButton button {
+        width: 100%;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
 
         div[data-testid="stChatInput"] {
             font-size: 16px;
@@ -484,7 +507,10 @@ if uploaded_image is not None:
     with st.chat_message("assistant"):
         try:
             with st.spinner("🔎 Analisando a fotografia..."):
-               response_text = analyze_image(uploaded_image, question) if question else analyze_image(uploaded_image)
+               response_text = analyze_image(
+    uploaded_image,
+    question or "Analise esta imagem, identifique a cultura e faça o diagnóstico técnico."
+)
         except Exception as exc:
             response_text = (
                 "Não foi possível analisar a imagem agora. "
