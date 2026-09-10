@@ -497,28 +497,25 @@ else:
         "Envie uma foto para diagnóstico",
         type=["jpg", "jpeg", "png"]
     )
-
 if uploaded_image is not None:
-    st.image(uploaded_image, caption="Imagem enviada para análise, width=350")
-question = st.chat_input(
-    "Pergunte sobre culturas, pragas, doenças, irrigação, adubação..."
-)
+    analisar_foto = st.button("🔎 Analisar foto")
 
-if uploaded_image is not None:
-    with st.chat_message("assistant"):
-        try:
-            with st.spinner("🔎 Analisando a fotografia..."):
-               response_text = analyze_image(
-    uploaded_image,
-    question or "Analise esta imagem, identifique a cultura e faça o diagnóstico técnico."
-)
-        except Exception as exc:
-            response_text = (
-                "Não foi possível analisar a imagem agora. "
-                f"Detalhe técnico: {exc}"
-            )
+    if question or analisar_foto:
+        with st.chat_message("assistant"):
+            try:
+                with st.spinner("🔎 Analisando a fotografia..."):
+                    response_text = analyze_image(
+                        uploaded_image,
+                        question or "Analise esta imagem, identifique a cultura e faça o diagnóstico técnico."
+                    )
+            except Exception as exc:
+                response_text = (
+                    "Não foi possível analisar a imagem agora. "
+                    f"Detalhe técnico: {exc}"
+                )
 
-        st.markdown(response_text)
+            st.markdown(response_text)
+            
 if question and uploaded_image is None:
     st.session_state.messages.append({"role": "user", "content": question})
     with st.chat_message("user"):
