@@ -434,11 +434,11 @@ question = st.chat_input(
     "Pergunte sobre culturas, pragas, doenças, irrigação, adubação..."
 )
 
-if uploaded_image is not None and not question:
-    with st.chat_message("assistant"):
+if uploaded_image is not None:
+with st.chat_message("assistant"):
         try:
             with st.spinner("🔎 Analisando a fotografia..."):
-                response_text = analyze_image(uploaded_image)
+               response_text = analyze_image(uploaded_image, question) if question else analyze_image(uploaded_image)
         except Exception as exc:
             response_text = (
                 "Não foi possível analisar a imagem agora. "
@@ -446,7 +446,7 @@ if uploaded_image is not None and not question:
             )
 
         st.markdown(response_text)
-if question:
+if question and uploaded_image is None:
     st.session_state.messages.append({"role": "user", "content": question})
     with st.chat_message("user"):
         st.markdown(question)
