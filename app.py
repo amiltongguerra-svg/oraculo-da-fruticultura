@@ -435,7 +435,7 @@ question = st.chat_input(
 )
 
 if uploaded_image is not None:
-with st.chat_message("assistant"):
+    with st.chat_message("assistant"):
         try:
             with st.spinner("🔎 Analisando a fotografia..."):
                response_text = analyze_image(uploaded_image, question) if question else analyze_image(uploaded_image)
