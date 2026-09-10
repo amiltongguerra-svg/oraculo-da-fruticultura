@@ -164,12 +164,17 @@ def analyze_image(uploaded_image, question="Analise esta imagem de uma planta ou
 
     response = client.responses.create(
         model=CHAT_MODEL,
-        tools=[
-            {
-                "type": "file_search",
-                "vector_store_ids": [VECTOR_STORE_ID],
-            }
-        ],
+       tools=[
+    {
+        "type": "file_search",
+        "vector_store_ids": [VECTOR_STORE_ID],
+    },
+    {
+        "type": "web_search",
+        "filters": {"allowed_domains": PUBLIC_SOURCE_DOMAINS},
+        "search_context_size": "medium",
+    },
+],
         input=[
             {
                 "role": "user",
