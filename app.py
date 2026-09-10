@@ -179,18 +179,26 @@ def analyze_image(uploaded_image, question="Analise esta imagem de uma planta ou
                         "type": "input_text",
                         "text": (
                    question
-+ "\nFaça uma análise agronômica cuidadosa da imagem. "
-"Indique o que é visível, as causas prováveis e as medidas "
-"de manejo recomendadas. Não trate o diagnóstico visual "
-"como confirmação laboratorial quando houver incerteza. "
++ "Faça uma análise agronômica cuidadosa da imagem. "
+"Organize obrigatoriamente a resposta, de forma clara e adequada para leitura no celular, nas seguintes seções: "
+"## 🔎 Diagnóstico provável\n"
+"Identifique o problema mais provável observado na imagem e explique brevemente os sinais visíveis. "
+"## 📊 Nível de confiança\n"
+"Classifique como Alto, Moderado ou Baixo e explique resumidamente o motivo. "
+"## ✅ Como confirmar\n"
+"Informe o que deve ser observado na planta ou no campo para confirmar o diagnóstico. "
+"## 🌱 Manejo recomendado\n"
+"Apresente medidas práticas de manejo, priorizando medidas culturais, biológicas e, quando necessário, químicas. "
+"Não recomende tratamento químico sem considerar a confirmação do diagnóstico. "
+"## ⚠️ Diagnósticos diferenciais\n"
+"Informe outras causas, pragas, doenças, deficiências nutricionais ou fitotoxicidade que possam produzir sintomas semelhantes. "
 "Consulte também a base documental privada disponível por meio do file_search. "
 "Priorize as informações encontradas nessa base quando forem pertinentes. "
 "Não invente referências. "
-"Ao final da resposta, crie uma seção chamada 'Fontes consultadas' "
-"e informe somente os documentos efetivamente utilizados na resposta."                        ),
-                    },
-                    {
-                        "type": "input_image",
+"## 📚 Fontes consultadas\n"
+"Esta deve ser obrigatoriamente a última seção da resposta. "
+"Informe somente os documentos efetivamente utilizados na resposta."
+                            "type": "input_image",
                         "image_url": f"data:{mime_type};base64,{image_base64}",
                     },
                 ],
