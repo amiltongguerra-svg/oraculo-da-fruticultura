@@ -53,12 +53,10 @@ st.markdown(
             height: auto !important;
         }
 
-        div[data-testid="stChatMessage"] {
+div[data-testid="stChatMessage"] {
             padding-left: 0.2rem;
             padding-right: 0.2rem;
         }
-st.markdown("""
-<style>
 @media (max-width: 768px) {
     .block-container {
         padding-top: 1rem;
