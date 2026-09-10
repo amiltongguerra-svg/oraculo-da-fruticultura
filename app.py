@@ -417,7 +417,7 @@ else:
     )
 
 if uploaded_image is not None:
-    st.image(uploaded_image, caption="Imagem enviada para análise")
+    st.image(uploaded_image, caption="Imagem enviada para análise, width=350")
 question = st.chat_input(
     "Pergunte sobre culturas, pragas, doenças, irrigação, adubação..."
 )
