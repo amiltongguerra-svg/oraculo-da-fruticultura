@@ -204,7 +204,7 @@ def analyze_image(uploaded_image, question="Analise esta imagem de uma planta ou
                 "type": "input_image",
                 "image_url": f"data:{mime_type};base64,{image_base64}",
             },
-                                              },
+                    ],
                 ],
             }
         ],
