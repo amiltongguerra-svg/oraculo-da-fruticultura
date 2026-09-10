@@ -193,6 +193,8 @@ def analyze_image(uploaded_image, question="Analise esta imagem de uma planta ou
                             "Informe outras causas, pragas, doenças, deficiências nutricionais ou fitotoxicidade que possam produzir sintomas semelhantes.\n\n"
                             "Consulte também a base documental privada disponível por meio do file_search. "
                             "Priorize as informações encontradas nessa base quando forem pertinentes. "
+                            "Use como fonte apenas documentos e trechos tecnicamente pertinentes à cultura, espécie ou problema analisado. "
+                            "Se um trecho recuperado tratar de outra cultura e não for diretamente aplicável ao diagnóstico, descarte-o e não o cite. "
                             "Não invente referências.\n\n"
                             "## 📚 Fontes consultadas\n"
                             "Esta deve ser obrigatoriamente a última seção da resposta. "
