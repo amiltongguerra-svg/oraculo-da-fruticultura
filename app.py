@@ -56,7 +56,8 @@ st.markdown(
         div[data-testid="stChatMessage"] {
             padding-left: 0.2rem;
             padding-right: 0.2rem;
-        }st.markdown("""
+        }
+st.markdown("""
 <style>
 @media (max-width: 768px) {
     .block-container {
@@ -81,7 +82,9 @@ st.markdown(
 </style>
 """, unsafe_allow_html=True)
 
-        div[data-testid="stChatInput"] {
+st.markdown("""
+<style>
+div[data-testid="stChatInput"] {
             font-size: 16px;
         }
 
@@ -89,7 +92,7 @@ st.markdown(
             line-height: 1.45;
         }
     }
-    </style>
+</style>
     """,
     unsafe_allow_html=True,
 )
