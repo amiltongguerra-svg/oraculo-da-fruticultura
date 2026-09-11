@@ -508,7 +508,12 @@ else:
     uploaded_image = st.file_uploader(
         "Envie uma foto para diagnóstico",
         type=["jpg", "jpeg", "png"]
-    )
+    ) 
+    # Mantém a imagem disponível após o rerun do Streamlit
+if uploaded_image is not None:
+    st.session_state["uploaded_image_cache"] = uploaded_image
+elif "uploaded_image_cache" in st.session_state:
+    uploaded_image = st.session_state["uploaded_image_cache"]
     question = st.chat_input(
     "Pergunte sobre culturas, pragas, doenças, irrigação, adubação..."
 )
