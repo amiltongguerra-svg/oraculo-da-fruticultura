@@ -516,11 +516,14 @@ if uploaded_image is not None:
 elif "uploaded_image_cache" in st.session_state:
     uploaded_image = st.session_state["uploaded_image_cache"]
 
+if st.button("🧹 Nova consulta / Limpar foto"):
+    st.session_state.pop("uploaded_image_cache", None)
+    st.rerun()
+
 # Campo de pergunta sempre disponível
 question = st.chat_input(
     "Pergunte sobre culturas, pragas, doenças, irrigação, adubação..."
 )
-
 # Evita NameError quando não há imagem
 analisar_foto = False
 if uploaded_image is not None:
