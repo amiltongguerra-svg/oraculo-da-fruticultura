@@ -547,20 +547,20 @@ if uploaded_image is not None:
 if (question or analisar_foto) and (
     uploaded_image is not None or "uploaded_image_bytes" in st.session_state
 ):
-with st.chat_message("assistant"):
-            try:
-                with st.spinner("🔎 Analisando a fotografia..."):
- response_text = analyze_image(
-    uploaded_image if uploaded_image is not None else None,
-    question or "Analise esta imagem, identifique a cultura e faça o diagnóstico técnico."
-)
-except Exception as exc:
-                response_text = (
-                    "Não foi possível analisar a imagem agora. "
-                    f"Detalhe técnico: {exc}"
+    with st.chat_message("assistant"):
+        try:
+            with st.spinner("🔎 Analisando a fotografia..."):
+                response_text = analyze_image(
+                    uploaded_image if uploaded_image is not None else None,
+                    question or "Analise esta imagem, identifique a cultura e faça o diagnóstico técnico."
                 )
+        except Exception as exc:
+            response_text = (
+                "Não foi possível analisar a imagem agora. "
+                f"Detalhe técnico: {exc}"
+            )
 
-    if question and uploaded_image is None and "uploaded_image_bytes" not in st.session_state:            
+        st.markdown(response_text)
 if question and uploaded_image is None:
     st.session_state.messages.append({"role": "user", "content": question})
     with st.chat_message("user"):
