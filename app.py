@@ -510,16 +510,21 @@ else:
         type=["jpg", "jpeg", "png"]
     )
 
-# Mantém a imagem disponível após o rerun do Streamlit
 if uploaded_image is not None:
-    st.session_state["uploaded_image_cache"] = uploaded_image
-elif "uploaded_image_cache" in st.session_state:
-    uploaded_image = st.session_state["uploaded_image_cache"]
+    st.session_state["uploaded_image_bytes"] = uploaded_image.getvalue()
+    st.session_state["uploaded_image_type"] = uploaded_image.type or "image/jpeg"
 
+elif "uploaded_image_bytes" in st.session_state:
+    uploaded_image = BytesIO(st.session_state["uploaded_image_bytes"])
+    uploaded_image.type = st.session_state.get(
+        "uploaded_image_type",
+        "image/jpeg"
+    )
 if st.button("🧹 Nova consulta / Limpar foto"):
-    st.session_state.pop("uploaded_image_cache", None)
-    st.session_state["messages"] = []
-    st.rerun()
+st.session_state.pop("uploaded_image_bytes", None)
+st.session_state.pop("uploaded_image_type", None)
+st.session_state["messages"] = []
+st.rerun()
 # Campo de pergunta sempre disponível
 question = st.chat_input(
     "Pergunte sobre culturas, pragas, doenças, irrigação, adubação..."
