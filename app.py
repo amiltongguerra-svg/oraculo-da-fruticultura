@@ -234,11 +234,20 @@ def delete_document(file_id):
         vector_store_id=VECTOR_STORE_ID, file_id=file_id
     )
     client.files.delete(file_id)
-def analyze_image(uploaded_image, question="Analise esta imagem de uma planta ou fruto."):
+def analyze_image(uploaded_image, question="Analise esta imagem de uma planta, fruto ou folha."):
+if uploaded_image is not None:
     image_bytes = uploaded_image.getvalue()
-    image_base64 = base64.b64encode(image_bytes).decode("utf-8")
-    mime_type = uploaded_image.type or "image/jpeg"
+    mime_type = getattr(uploaded_image, "type", None) or st.session_state.get(
+        "uploaded_image_type", "image/jpeg"
+    )
+else:
+    image_bytes = st.session_state.get("uploaded_image_bytes")
+    mime_type = st.session_state.get("uploaded_image_type", "image/jpeg")
 
+if not image_bytes:
+    raise ValueError("Nenhuma imagem disponível para análise.")
+
+image_base64 = base64.b64encode(image_bytes).decode("utf-8")
     response = client.responses.create(
         model=CHAT_MODEL,
        tools=[
