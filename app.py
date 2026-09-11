@@ -229,11 +229,10 @@ def list_documents():
 
 
 def delete_document(file_id):
-# Remove o documento do Vector Store e também da Files API.
- st.markdown(response_text)
-
+    # Remove o documento do Vector Store e também da Files API.
     client.vector_stores.files.delete(
-        vector_store_id=VECTOR_STORE_ID, file_id=file_id
+        vector_store_id=VECTOR_STORE_ID,
+        file_id=file_id
     )
     client.files.delete(file_id)
 def analyze_image(uploaded_image, question="Analise esta imagem de uma planta, fruto ou folha."):
