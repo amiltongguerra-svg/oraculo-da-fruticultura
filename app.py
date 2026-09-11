@@ -76,6 +76,18 @@ div[data-testid="stChatMessage"] {
     .stButton button {
         width: 100%;
     }
+/* Melhorias para celular */
+div[data-testid="stChatInput"] textarea {
+    font-size: 16px !important;
+}
+
+div[data-testid="stFileUploader"] {
+    width: 100% !important;
+}
+
+div[data-testid="stCameraInput"] {
+    width: 100% !important;
+}
 }
 </style>
 """, unsafe_allow_html=True)
