@@ -248,6 +248,7 @@ def analyze_image(uploaded_image, question="Analise esta imagem de uma planta, f
         raise ValueError("Nenhuma imagem disponível para análise.")
 
     image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+    st.write("DEBUG imagem:", len(image_bytes), mime_type)
     response = client.responses.create(
         model=CHAT_MODEL,
        tools=[
