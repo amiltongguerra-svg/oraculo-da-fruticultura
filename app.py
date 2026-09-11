@@ -521,10 +521,10 @@ elif "uploaded_image_bytes" in st.session_state:
         "image/jpeg"
     )
 if st.button("🧹 Nova consulta / Limpar foto"):
-st.session_state.pop("uploaded_image_bytes", None)
-st.session_state.pop("uploaded_image_type", None)
-st.session_state["messages"] = []
-st.rerun()
+    st.session_state.pop("uploaded_image_bytes", None)
+    st.session_state.pop("uploaded_image_type", None)
+    st.session_state["messages"] = []
+    st.rerun()
 # Campo de pergunta sempre disponível
 question = st.chat_input(
     "Pergunte sobre culturas, pragas, doenças, irrigação, adubação..."
