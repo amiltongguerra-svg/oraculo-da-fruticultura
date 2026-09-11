@@ -508,19 +508,25 @@ else:
     uploaded_image = st.file_uploader(
         "Envie uma foto para diagnóstico",
         type=["jpg", "jpeg", "png"]
-    ) 
-    # Mantém a imagem disponível após o rerun do Streamlit
+    )
+
+# Mantém a imagem disponível após o rerun do Streamlit
 if uploaded_image is not None:
     st.session_state["uploaded_image_cache"] = uploaded_image
 elif "uploaded_image_cache" in st.session_state:
     uploaded_image = st.session_state["uploaded_image_cache"]
-    question = st.chat_input(
+
+# Campo de pergunta sempre disponível
+question = st.chat_input(
     "Pergunte sobre culturas, pragas, doenças, irrigação, adubação..."
 )
-if uploaded_image is not None:
-    analisar_foto = st.button("🔎 Analisar foto")
 
-    if question or analisar_foto:
+# Evita NameError quando não há imagem
+analisar_foto = False
+if uploaded_image is not None:
+    analisar_foto = st.button("🔎 Analisar foto")  
+
+if question or analisar_foto:
         with st.chat_message("assistant"):
             try:
                 with st.spinner("🔎 Analisando a fotografia..."):
