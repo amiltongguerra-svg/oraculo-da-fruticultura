@@ -394,15 +394,19 @@ def answer(question):
     response = client.responses.create(**request)
     answer = response.output_text
 
-# Remove marcadores internos de citação que não devem aparecer para o usuário
-    import re
-answer = re.sub(
-    r"\ue200filecite\ue202.*?\ue201",
-    "",
-    answer,
-)
+    response = client.responses.create(**request)
+    answer = response.output_text
 
-answer = "\n".join(
+        # Remove marcadores internos de citação que não devem aparecer para o usuário
+    import re
+
+    answer = re.sub(
+        r"\ue200filecite\ue202.*?\ue201",
+        "",
+        answer,
+    )
+
+    answer = "\n".join(
         line for line in answer.splitlines()
         if not line.strip().lower().startswith(
             ("consultas utilizadas:", "base técnica utilizada:")
@@ -420,6 +424,7 @@ answer = "\n".join(
 
                 if annotation_type == "file_citation":
                     filename = getattr(annotation, "filename", None)
+
                     if filename and filename not in file_sources:
                         file_sources.append(filename)
 
@@ -451,11 +456,12 @@ answer = "\n".join(
                             web_sources.append((title, url))
 
     if file_sources or web_sources:
-        answer += "\n\n## 📚 Fontes consultadas:\n"
+        answer += "\n\n## 📚 Fontes consultadas\n"
 
         if file_sources:
             answer += "\n".join(
-                f"- Documento privado: {filename}" for filename in file_sources
+                f"- Documento privado: {filename}"
+                for filename in file_sources
             )
 
         if file_sources and web_sources:
@@ -463,7 +469,8 @@ answer = "\n".join(
 
         if web_sources:
             answer += "\n".join(
-                f"- Fonte pública: [{title}]({url})" for title, url in web_sources
+                f"- Fonte pública: [{title}]({url})"
+                for title, url in web_sources
             )
 
     return answer
