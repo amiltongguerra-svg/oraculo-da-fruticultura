@@ -402,7 +402,7 @@ answer = re.sub(
     answer,
 )
 
-    answer = "\n".join(
+answer = "\n".join(
         line for line in answer.splitlines()
         if not line.strip().lower().startswith(
             ("consultas utilizadas:", "base técnica utilizada:")
