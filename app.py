@@ -449,22 +449,22 @@ for item in response.output:
                         if title not in [source[0] for source in web_sources]:
                             web_sources.append((title, url))
     if file_sources or web_sources:
-        answer += "\n\n**Fontes consultadas:**\n"
+        answer += "\n\n## 📚 Fontes consultadas:\n"
 
-    if file_sources:
-        answer += "\n".join(
-            f"- Documento privado: {filename}" for filename in file_sources
-        )
+        if file_sources:
+            answer += "\n".join(
+                f"- Documento privado: {filename}" for filename in file_sources
+            )
 
-    if file_sources and web_sources:
-        answer += "\n"
+        if file_sources and web_sources:
+            answer += "\n"
 
-    if web_sources:
-        answer += "\n".join(
-            f"- Fonte pública: [{title}]({url})" for title, url in web_sources
-        ) 
+        if web_sources:
+            answer += "\n".join(
+                f"- Fonte pública: [{title}]({url})" for title, url in web_sources
+            )
 
-    return answer
+    return answer    
 with st.sidebar:
     st.header("⚙️ Administração")
 
