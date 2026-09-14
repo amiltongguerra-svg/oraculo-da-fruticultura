@@ -573,9 +573,11 @@ if (question or analisar_foto) and had_image:
 st.session_state.pop("uploaded_image_bytes", None)
 st.session_state.pop("uploaded_image_type", None)
 if question and not had_image:
-st.session_state.messages.append({"role": "user", "content": question})
+    st.session_state.messages.append({"role": "user", "content": question})
+
     with st.chat_message("user"):
         st.markdown(question)
+
     with st.chat_message("assistant"):
         try:
             with st.spinner("Consultando a base técnica privada..."):
@@ -584,8 +586,10 @@ st.session_state.messages.append({"role": "user", "content": question})
             response_text = (
                 "Não foi possível consultar a base agora. "
                 f"Detalhe técnico: {exc}"
-            ) 
+            )
+
         st.markdown(response_text)
+
     st.session_state.messages.append(
         {"role": "assistant", "content": response_text}
     )
