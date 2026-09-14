@@ -573,7 +573,7 @@ if (question or analisar_foto) and (
         st.markdown(response_text)
 st.session_state.pop("uploaded_image_bytes", None)
 st.session_state.pop("uploaded_image_type", None)
-if question and uploaded_image is None:
+elif question:
     st.session_state.messages.append({"role": "user", "content": question})
     with st.chat_message("user"):
         st.markdown(question)
