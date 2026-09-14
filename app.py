@@ -236,20 +236,47 @@ def delete_document(file_id):
     )
     client.files.delete(file_id)
 def analyze_image(uploaded_image, question="Analise esta imagem de uma planta, fruto ou folha."):
-    if uploaded_image is not None:
-        image_bytes = uploaded_image.getvalue()
-        mime_type = getattr(uploaded_image, "type", None) or st.session_state.get(
-            "uploaded_image_type", "image/jpeg"
-        )
+      if uploaded_image is not None:
+        image_bytes_list = [uploaded_image.getvalue()]
+        image_types_list = [
+            getattr(uploaded_image, "type", None) or "image/jpeg"
+        ]
     else:
-        image_bytes = st.session_state.get("uploaded_image_bytes")
-        mime_type = st.session_state.get("uploaded_image_type", "image/jpeg")
+        image_bytes_list = st.session_state.get(
+            "uploaded_images_bytes", []
+        )
+        image_types_list = st.session_state.get(
+            "uploaded_images_types", []
+        )
 
-    if not image_bytes:
+        # Compatibilidade com consultas antigas de uma única foto
+        if not image_bytes_list:
+            image_bytes = st.session_state.get("uploaded_image_bytes")
+            mime_type = st.session_state.get(
+                "uploaded_image_type", "image/jpeg"
+            )
+
+            if image_bytes:
+                image_bytes_list = [image_bytes]
+                image_types_list = [mime_type]
+
+    if not image_bytes_list:
         raise ValueError("Nenhuma imagem disponível para análise.")
 
-    image_base64 = base64.b64encode(image_bytes).decode("utf-8")
-    
+    image_content = []
+
+    for image_bytes, mime_type in zip(
+        image_bytes_list[:3],
+        image_types_list[:3]
+    ):
+        image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+
+        image_content.append(
+            {
+                "type": "input_image",
+                "image_url": f"data:{mime_type};base64,{image_base64}"
+            }
+        )    
     response = client.responses.create(
         model=CHAT_MODEL,
        tools=[
@@ -294,10 +321,7 @@ def analyze_image(uploaded_image, question="Analise esta imagem de uma planta, f
                             "Informe somente os documentos efetivamente utilizados na resposta."
                         ),
                     },
-                    {
-                        "type": "input_image",
-                        "image_url": f"data:{mime_type};base64,{image_base64}",
-                    },
+                   *image_content,
                 ],
             }
         ],
@@ -525,15 +549,37 @@ uploaded_image = None
 if image_source == "Tirar foto com a câmera":
     uploaded_image = st.camera_input("Tire uma foto para diagnóstico")
 else:
-    uploaded_image = st.file_uploader(
-        "Envie uma foto para diagnóstico",
-        type=["jpg", "jpeg", "png"]
-    )
+    uploaded_images = st.file_uploader(
+    "Envie até 3 fotos para diagnóstico",
+    type=["jpg", "jpeg", "png"],
+    accept_multiple_files=True
+)
 
-if uploaded_image is not None:
-    st.session_state["uploaded_image_bytes"] = uploaded_image.getvalue()
-    st.session_state["uploaded_image_type"] = uploaded_image.type or "image/jpeg"
+if len(uploaded_images) > 3:
+    st.warning("Envie no máximo 3 fotografias.")
+    uploaded_images = uploaded_images[:3]
 
+uploaded_image = uploaded_images[0] if uploaded_images else None
+
+if image_source == "Tirar foto com a câmera" and uploaded_image is not None:
+    image_bytes_list = [uploaded_image.getvalue()]
+    image_types_list = [uploaded_image.type or "image/jpeg"]
+
+elif image_source == "Enviar foto da galeria" and uploaded_images:
+    image_bytes_list = [img.getvalue() for img in uploaded_images]
+    image_types_list = [img.type or "image/jpeg" for img in uploaded_images]
+
+else:
+    image_bytes_list = []
+    image_types_list = []
+
+if image_bytes_list:
+    st.session_state["uploaded_images_bytes"] = image_bytes_list
+    st.session_state["uploaded_images_types"] = image_types_list
+
+    # Mantém compatibilidade com o diagnóstico atual
+    st.session_state["uploaded_image_bytes"] = image_bytes_list[0]
+    st.session_state["uploaded_image_type"] = image_types_list[0]
 elif "uploaded_image_bytes" in st.session_state:
     uploaded_image = BytesIO(st.session_state["uploaded_image_bytes"])
     uploaded_image.type = st.session_state.get(
