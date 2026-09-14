@@ -236,7 +236,7 @@ def delete_document(file_id):
     )
     client.files.delete(file_id)
 def analyze_image(uploaded_image, question="Analise esta imagem de uma planta, fruto ou folha."):
-      if uploaded_image is not None:
+          if uploaded_image is not None:
         image_bytes_list = [uploaded_image.getvalue()]
         image_types_list = [
             getattr(uploaded_image, "type", None) or "image/jpeg"
@@ -249,16 +249,16 @@ def analyze_image(uploaded_image, question="Analise esta imagem de uma planta, f
             "uploaded_images_types", []
         )
 
-        # Compatibilidade com consultas antigas de uma única foto
-        if not image_bytes_list:
-            image_bytes = st.session_state.get("uploaded_image_bytes")
-            mime_type = st.session_state.get(
-                "uploaded_image_type", "image/jpeg"
-            )
+           # Compatibilidade com consultas antigas de uma única foto
+    if not image_bytes_list:
+        image_bytes = st.session_state.get("uploaded_image_bytes")
+        mime_type = st.session_state.get(
+            "uploaded_image_type", "image/jpeg"
+        )
 
-            if image_bytes:
-                image_bytes_list = [image_bytes]
-                image_types_list = [mime_type]
+        if image_bytes:
+            image_bytes_list = [image_bytes]
+            image_types_list = [mime_type]
 
     if not image_bytes_list:
         raise ValueError("Nenhuma imagem disponível para análise.")
@@ -276,8 +276,8 @@ def analyze_image(uploaded_image, question="Analise esta imagem de uma planta, f
                 "type": "input_image",
                 "image_url": f"data:{mime_type};base64,{image_base64}"
             }
-        )    
-    response = client.responses.create(
+        )
+        response = client.responses.create(
         model=CHAT_MODEL,
        tools=[
     {
