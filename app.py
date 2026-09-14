@@ -369,6 +369,13 @@ def answer(question):
 
     response = client.responses.create(**request)
     answer = response.output_text
+    # Remove marcadores internos de citação que não devem aparecer para o usuário
+import re
+answer = re.sub(
+    r'\ufffdfilecite\ufffd(?:turn\d+file\d+\ufffd)+',
+    '',
+    answer
+)
     answer = "\n".join(
         line for line in answer.splitlines()
         if not line.strip().lower().startswith(
