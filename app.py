@@ -394,13 +394,13 @@ def answer(question):
     response = client.responses.create(**request)
     answer = response.output_text
 
-    # Remove marcadores internos de citação que não devem aparecer para o usuário
+# Remove marcadores internos de citação que não devem aparecer para o usuário
     import re
-    answer = re.sub(
-        r'\ufffdfilecite\ufffd(?:turn\d+file\d+\ufffd)+',
-        '',
-    answer
-    )
+answer = re.sub(
+    r"\ue200filecite\ue202.*?\ue201",
+    "",
+    answer,
+)
 
     answer = "\n".join(
         line for line in answer.splitlines()
