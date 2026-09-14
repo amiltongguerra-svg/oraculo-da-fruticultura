@@ -409,9 +409,9 @@ answer = "\n".join(
         )
     )
 
-    file_sources = []
-    web_sources = []
-    for item in response.output:
+file_sources = []
+web_sources = []
+for item in response.output:
         for content in getattr(item, "content", []):
             for annotation in getattr(content, "annotations", []):
                 annotation_type = getattr(annotation, "type", "")
