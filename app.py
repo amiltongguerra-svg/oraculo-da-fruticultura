@@ -409,9 +409,10 @@ answer = "\n".join(
         )
     )
 
-file_sources = []
-web_sources = []
-for item in response.output:
+    file_sources = []
+    web_sources = []
+
+    for item in response.output:
         for content in getattr(item, "content", []):
             for annotation in getattr(content, "annotations", []):
                 annotation_type = getattr(annotation, "type", "")
@@ -439,15 +440,16 @@ for item in response.output:
                     }
 
                     title = getattr(annotation, "title", None) or "Fonte pública"
-    
+
                     if url:
                         for domain, source_name in source_names.items():
                             if domain in url:
                                 title = source_name
                                 break
-    
+
                         if title not in [source[0] for source in web_sources]:
                             web_sources.append((title, url))
+
     if file_sources or web_sources:
         answer += "\n\n## 📚 Fontes consultadas:\n"
 
@@ -464,7 +466,7 @@ for item in response.output:
                 f"- Fonte pública: [{title}]({url})" for title, url in web_sources
             )
 
-    return answer    
+    return answer
 with st.sidebar:
     st.header("⚙️ Administração")
 
