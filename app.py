@@ -553,10 +553,9 @@ question = st.chat_input(
 analisar_foto = False
 if uploaded_image is not None:
     analisar_foto = st.button("🔎 Analisar foto")  
+had_image = uploaded_image is not None or "uploaded_image_bytes" in st.session_state
 
-if (question or analisar_foto) and (
-    uploaded_image is not None or "uploaded_image_bytes" in st.session_state
-):
+if (question or analisar_foto) and had_image:
     with st.chat_message("assistant"):
         try:
             with st.spinner("🔎 Analisando a fotografia..."):
@@ -573,8 +572,8 @@ if (question or analisar_foto) and (
         st.markdown(response_text)
 st.session_state.pop("uploaded_image_bytes", None)
 st.session_state.pop("uploaded_image_type", None)
-elif question:
-    st.session_state.messages.append({"role": "user", "content": question})
+if question and not had_image:
+st.session_state.messages.append({"role": "user", "content": question})
     with st.chat_message("user"):
         st.markdown(question)
     with st.chat_message("assistant"):
