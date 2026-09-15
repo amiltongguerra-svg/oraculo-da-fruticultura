@@ -608,8 +608,11 @@ question = st.chat_input(
 analisar_foto = False
 if uploaded_image is not None:
     analisar_foto = st.button("🔎 Analisar foto")  
-had_image = uploaded_image is not None or "uploaded_image_bytes" in st.session_state
-
+had_image = (
+    uploaded_image is not None
+    or bool(st.session_state.get("uploaded_images_bytes"))
+    or bool(st.session_state.get("uploaded_image_bytes"))
+)
 if (question or analisar_foto) and had_image:
     with st.chat_message("assistant"):
         try:
