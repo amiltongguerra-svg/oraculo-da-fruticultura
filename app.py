@@ -632,7 +632,7 @@ if (question or analisar_foto) and had_image:
                     "uploaded_image_type",
                     "image/jpeg"
                 )
-                    response_text = analyze_image(
+            response_text = analyze_image(
                 image_for_analysis,
                 question or "Analise esta imagem, identifique a cultura e faça o diagnóstico técnico."
             )
