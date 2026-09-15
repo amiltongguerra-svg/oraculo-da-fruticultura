@@ -640,8 +640,8 @@ if (question or analisar_foto) and had_image:
 
     st.session_state.pop("uploaded_image_bytes", None)
     st.session_state.pop("uploaded_image_type", None)
-st.session_state.pop("uploaded_image_bytes", None)
-st.session_state.pop("uploaded_image_type", None)
+    st.session_state.pop("uploaded_images_bytes", None)
+    st.session_state.pop("uploaded_images_types", None)
 if question and not had_image:
     st.session_state.messages.append({"role": "user", "content": question})
 
