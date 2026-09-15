@@ -615,7 +615,7 @@ if (question or analisar_foto) and had_image:
         try:
             with st.spinner("🔎 Analisando a fotografia..."):
                image_for_analysis = None
-                if image_for_analysis is None and "uploaded_image_bytes" in st.session_state:
+               if image_for_analysis is None and "uploaded_image_bytes" in st.session_state:
                     image_for_analysis = BytesIO(
                         st.session_state["uploaded_image_bytes"]
                     )
