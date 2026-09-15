@@ -624,13 +624,11 @@ response_text = analyze_image(
     image_for_analysis,
     question or "Analise esta imagem, identifique a cultura e faça o diagnóstico técnico."
 )
-                )
-        except Exception as exc:
-            response_text = (
-                "Não foi possível analisar a imagem agora. "
-                f"Detalhe técnico: {exc}"
-            )
-
+except Exception as exc:
+    response_text = (
+        "Não foi possível analisar a imagem agora.\n\n"
+        f"Detalhe técnico: {exc}"
+    )
         st.markdown(response_text)
 st.session_state.pop("uploaded_image_bytes", None)
 st.session_state.pop("uploaded_image_type", None)
