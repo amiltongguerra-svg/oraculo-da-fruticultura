@@ -568,8 +568,8 @@ if len(uploaded_images) > 3:
     st.warning("Envie no máximo 3 fotografias.")
     uploaded_images = uploaded_images[:3]
 
-uploaded_image = uploaded_images[0] if uploaded_images else None
-
+if image_source == "Enviar foto da galeria":
+    uploaded_image = uploaded_images[0] if uploaded_images else None
 if image_source == "Tirar foto com a câmera" and uploaded_image is not None:
     image_bytes_list = [uploaded_image.getvalue()]
     image_types_list = [uploaded_image.type or "image/jpeg"]
