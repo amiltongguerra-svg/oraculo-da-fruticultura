@@ -554,7 +554,7 @@ image_source = st.radio(
 )
 
 uploaded_image = None
-
+uploaded_images = []
 if image_source == "Tirar foto com a câmera":
     uploaded_image = st.camera_input("Tire uma foto para diagnóstico")
 else:
