@@ -637,7 +637,7 @@ if (question or analisar_foto) and had_image:
                 question or "Analise esta imagem, identifique a cultura e faça o diagnóstico técnico."
             )
 
-            except Exception as exc:
+        except Exception as exc:
             response_text = (
                 "Não foi possível analisar a imagem agora.\n\n"
                 f"Detalhe técnico: {exc}"
