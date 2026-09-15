@@ -613,6 +613,7 @@ had_image = (
     or bool(st.session_state.get("uploaded_images_bytes"))
     or bool(st.session_state.get("uploaded_image_bytes"))
 )
+
 if (question or analisar_foto) and had_image:
     with st.chat_message("assistant"):
         try:
