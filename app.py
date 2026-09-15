@@ -636,7 +636,7 @@ if (question or analisar_foto) and had_image:
                     "uploaded_image_type",
                     "image/jpeg"
                 ) 
-            if image_for_analysis is not None and hasattr(image_for_analysis, "seek"):
+if image_for_analysis is not None and hasattr(image_for_analysis, "seek"):
     image_for_analysis.seek(0)
             response_text = analyze_image(
                 image_for_analysis,
