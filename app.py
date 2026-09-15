@@ -615,27 +615,27 @@ if (question or analisar_foto) and had_image:
         try:
             image_for_analysis = uploaded_image
 
-        if st.session_state.get("uploaded_images_bytes"):
-            image_for_analysis = BytesIO(
-                st.session_state["uploaded_images_bytes"][0]
+            if st.session_state.get("uploaded_images_bytes"):
+                image_for_analysis = BytesIO(
+                    st.session_state["uploaded_images_bytes"][0]
+                )
+                image_for_analysis.type = st.session_state.get(
+                    "uploaded_images_types",
+                    ["image/jpeg"]
+                )[0]
+            
+            elif image_for_analysis is None and st.session_state.get("uploaded_image_bytes"):
+                image_for_analysis = BytesIO(
+                    st.session_state["uploaded_image_bytes"]
+                )
+                image_for_analysis.type = st.session_state.get(
+                    "uploaded_image_type",
+                    "image/jpeg"
+                )
+                    response_text = analyze_image(
+                image_for_analysis,
+                question or "Analise esta imagem, identifique a cultura e faça o diagnóstico técnico."
             )
-            image_for_analysis.type = st.session_state.get(
-                "uploaded_images_types",
-                ["image/jpeg"]
-            )[0]
-        
-        elif image_for_analysis is None and st.session_state.get("uploaded_image_bytes"):
-            image_for_analysis = BytesIO(
-                st.session_state["uploaded_image_bytes"]
-            )
-            image_for_analysis.type = st.session_state.get(
-                "uploaded_image_type",
-                "image/jpeg"
-            )
-                response_text = analyze_image(
-            image_for_analysis,
-            question or "Analise esta imagem, identifique a cultura e faça o diagnóstico técnico."
-        )
 
             except Exception as exc:
             response_text = (
