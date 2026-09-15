@@ -614,9 +614,16 @@ if (question or analisar_foto) and had_image:
     with st.chat_message("assistant"):
         try:
             with st.spinner("🔎 Analisando a fotografia..."):
-                response_text = analyze_image(
-                    uploaded_image if uploaded_image is not None else None,
-                    question or "Analise esta imagem, identifique a cultura e faça o diagnóstico técnico."
+                image_for_analysis = uploaded_image
+
+if image_for_analysis is None and "uploaded_image_bytes" in st.session_state:
+    image_for_analysis = BytesIO(st.session_state["uploaded_image_bytes"])
+    image_for_analysis.type = st.session_state.get("uploaded_image_type", "image/jpeg")
+
+response_text = analyze_image(
+    image_for_analysis,
+    question or "Analise esta imagem, identifique a cultura e faça o diagnóstico técnico."
+)
                 )
         except Exception as exc:
             response_text = (
