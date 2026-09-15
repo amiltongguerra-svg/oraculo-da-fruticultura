@@ -600,10 +600,33 @@ if st.button("🧹 Nova consulta / Limpar foto"):
     st.session_state.pop("uploaded_image_type", None)
     st.session_state["messages"] = []
     st.rerun()
+# 🎤 Entrada por voz
+audio_pergunta = st.audio_input("🎤 Falar pergunta")
+if audio_pergunta is not None:
+    try:
+        client = OpenAI(api_key=API_KEY)
+
+        audio_pergunta.name = "pergunta.wav"
+
+        transcricao = client.audio.transcriptions.create(
+            model="gpt-4o-mini-transcribe",
+            file=audio_pergunta,
+            language="pt"
+        )
+
+        st.session_state["pergunta_voz"] = transcricao.text
+        st.success(f"🎤 Você disse: {transcricao.text}")
+
+    except Exception as e:
+        st.error(f"Erro ao transcrever a voz: {e}")
+
+
 # Campo de pergunta sempre disponível
 question = st.chat_input(
     "Pergunte sobre culturas, pragas, doenças, irrigação, adubação..."
 )
+if not question and st.session_state.get("pergunta_voz"):
+    question = st.session_state.pop("pergunta_voz")
 # Evita NameError quando não há imagem
 analisar_foto = False
 if uploaded_image is not None:
