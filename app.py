@@ -407,9 +407,7 @@ def answer(question):
     response = client.responses.create(**request)
     answer = response.output_text
 
-    response = client.responses.create(**request)
-    answer = response.output_text
-
+    
         # Remove marcadores internos de citação que não devem aparecer para o usuário
     import re
 
