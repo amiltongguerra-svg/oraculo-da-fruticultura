@@ -19,6 +19,19 @@ def cfg(name, default=None):
         pass
     return os.getenv(name, default)
 
+def gerar_audio_resposta(texto):
+    try:
+        client = OpenAI(api_key=API_KEY)
+        audio = client.audio.speech.create(
+            model="gpt-4o-mini-tts",
+            voice="coral",
+            input=texto
+        )
+        return audio.read()
+    except Exception as e:
+        st.warning(f"Não foi possível gerar o áudio: {e}")
+        return None
+
 
 API_KEY = cfg("OPENAI_API_KEY")
 VECTOR_STORE_ID = cfg("VECTOR_STORE_ID")
@@ -696,6 +709,9 @@ if question and not had_image:
             )
 
         st.markdown(response_text)
+        audio_resposta = gerar_audio_resposta(response_text)
+if audio_resposta:
+    st.audio(audio_resposta, format="audio/mp3")
 
     st.session_state.messages.append(
         {"role": "assistant", "content": response_text}
