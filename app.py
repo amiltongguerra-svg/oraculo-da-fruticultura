@@ -708,11 +708,10 @@ if question and not had_image:
                 f"Detalhe técnico: {exc}"
             )
 
-st.markdown(response_text)
-audio_resposta = gerar_audio_resposta(response_text)
-      if audio_resposta:
-    st.audio(audio_resposta, format="audio/mp3")
-
+            st.markdown(response_text)
+            audio_resposta = gerar_audio_resposta(response_text)
+            if audio_resposta:
+                st.audio(audio_resposta, format="audio/mp3")
     st.session_state.messages.append(
         {"role": "assistant", "content": response_text}
     )
