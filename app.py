@@ -29,9 +29,7 @@ def gerar_audio_resposta(texto):
         )
         return audio.read()
     except Exception as e:
-        st.warning(f"Não foi possível gerar o áudio: {e}")
         return None
-
 
 API_KEY = cfg("OPENAI_API_KEY")
 VECTOR_STORE_ID = cfg("VECTOR_STORE_ID")
