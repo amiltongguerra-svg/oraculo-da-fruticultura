@@ -633,7 +633,7 @@ question = st.chat_input(
     "Pergunte sobre culturas, pragas, doenças, irrigação, adubação..."
 )
 if not question and st.session_state.get("pergunta_voz"):
-    question = st.session_state.pop("pergunta_voz")
+    question = st.session_state.get("pergunta_voz")
 # Evita NameError quando não há imagem
 analisar_foto = False
 if uploaded_image is not None:
