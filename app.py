@@ -624,11 +624,12 @@ if audio_pergunta is not None:
             file=audio_pergunta,
             language="pt"
         )
+
         st.session_state["pergunta_voz"] = transcricao.text
         st.success(f"🎤 Você disse: {transcricao.text}")
-        except Exception as e:
-            st.error(f"Erro ao transcrever a voz: {e}")
 
+    except Exception as e:
+        st.error(f"Erro ao transcrever a voz: {e}")
 # Campo de pergunta sempre disponível
 question = st.chat_input(
     "Pergunte sobre culturas, pragas, doenças, irrigação, adubação..."
