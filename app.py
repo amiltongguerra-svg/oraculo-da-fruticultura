@@ -402,32 +402,31 @@ def answer(question):
         "tools": tools,
     }
 
-    inicio = time.time()
+inicio = time.time()
 response = client.responses.create(**request)
 answer = response.output_text
 tempo_resposta = time.time() - inicio
 st.caption(f"⏱️ Tempo de resposta: {tempo_resposta:.1f} segundos") 
         # Remove marcadores internos de citação que não devem aparecer para o usuário
-    import re
 
-    answer = re.sub(
+answer = re.sub(
         r"\ue200filecite\ue202.*?\ue201",
         "",
         answer,
     )
 
-    answer = "\n".join(
+answer = "\n".join(
         line for line in answer.splitlines()
         if not line.strip().lower().startswith(
             ("consultas utilizadas:", "base técnica utilizada:")
         )
     )
 
-    file_sources = []
-    web_sources = []
+file_sources = []
+web_sources = []
 
-    for item in response.output:
-        for content in getattr(item, "content", []):
+for item in response.output:
+    for content in getattr(item, "content", []):
             for annotation in getattr(content, "annotations", []):
                 annotation_type = getattr(annotation, "type", "")
                 url = None
