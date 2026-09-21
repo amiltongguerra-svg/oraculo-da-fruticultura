@@ -482,7 +482,7 @@ for item in response.output:
                 for title, url in web_sources
             )
 
-return answer 
+    return answer 
 with st.sidebar:
     st.header("⚙️ Administração")
 
