@@ -421,15 +421,13 @@ def answer(question):
             ("consultas utilizadas:", "base técnica utilizada:")
         )
     )
-
-        file_sources = []
+    file_sources = []
     web_sources = []
 
     for item in response.output:
         for content in getattr(item, "content", []):
             for annotation in getattr(content, "annotations", []):
                 annotation_type = getattr(annotation, "type", "")
-                url = None
 
                 if annotation_type == "file_citation":
                     filename = getattr(annotation, "filename", None)
@@ -440,22 +438,22 @@ def answer(question):
                 elif annotation_type == "url_citation":
                     url = getattr(annotation, "url", None)
 
-                    source_names = {
-                        "embrapa.br": "Embrapa",
-                        "iac.sp.gov.br": "IAC - Instituto Agronômico",
-                        "idrparana.pr.gov.br": "IDR-Paraná / IAPAR",
-                        "incaper.es.gov.br": "Incaper",
-                        "empaer.mt.gov.br": "Empaer",
-                        "epagri.sc.gov.br": "Epagri",
-                        "epamig.br": "EPAMIG",
-                        "ipa.br": "IPA",
-                        "emparn.rn.gov.br": "EMPARN",
-                        "scielo.br": "SciELO",
-                    }
-
-                    title = getattr(annotation, "title", None) or "Fonte pública"
-
                     if url:
+                        source_names = {
+                            "embrapa.br": "Embrapa",
+                            "iac.sp.gov.br": "IAC - Instituto Agronômico",
+                            "idrparana.pr.gov.br": "IDR-Paraná / IAPAR",
+                            "incaper.es.gov.br": "Incaper",
+                            "empaer.mt.gov.br": "Empaer",
+                            "epagri.sc.gov.br": "Epagri",
+                            "epamig.br": "EPAMIG",
+                            "ipa.br": "IPA",
+                            "emparn.rn.gov.br": "EMPARN",
+                            "scielo.br": "SciELO",
+                        }
+
+                        title = getattr(annotation, "title", None) or "Fonte pública"
+
                         for domain, source_name in source_names.items():
                             if domain in url:
                                 title = source_name
@@ -483,7 +481,8 @@ def answer(question):
             )
 
     return answer
-    with st.sidebar:
+      
+        with st.sidebar:
     st.header("⚙️ Administração")
 
     if not st.session_state.admin_ok:
