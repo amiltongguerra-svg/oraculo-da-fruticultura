@@ -2,7 +2,7 @@ import os
 import time
 from io import BytesIO
 import base64
-
+import re
 import streamlit as st
 from dotenv import load_dotenv
 from openai import OpenAI
