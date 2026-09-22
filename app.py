@@ -374,7 +374,7 @@ def answer(question):
         "EMEPA",
         "EMATER",
     )
-        require_public_search = any(
+    require_public_search = any(
             term in question.casefold() for term in public_search_terms
     )
 
