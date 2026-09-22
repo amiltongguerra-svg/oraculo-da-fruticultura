@@ -422,11 +422,11 @@ def answer(question):
         )
     )
 
-    file_sources = []
+        file_sources = []
     web_sources = []
 
     for item in response.output:
-    for content in getattr(item, "content", []):
+        for content in getattr(item, "content", []):
             for annotation in getattr(content, "annotations", []):
                 annotation_type = getattr(annotation, "type", "")
                 url = None
@@ -464,7 +464,7 @@ def answer(question):
                         if title not in [source[0] for source in web_sources]:
                             web_sources.append((title, url))
 
-        if file_sources or web_sources:
+    if file_sources or web_sources:
         answer += "\n\n## 📚 Fontes consultadas\n"
 
         if file_sources:
@@ -482,8 +482,8 @@ def answer(question):
                 for title, url in web_sources
             )
 
-        return answer
-with st.sidebar:
+    return answer
+    with st.sidebar:
     st.header("⚙️ Administração")
 
     if not st.session_state.admin_ok:
