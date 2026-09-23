@@ -421,7 +421,7 @@ def answer(question):
    #      if not line.strip().lower().startswith(
    # #         ("consultas utilizadas:", "base técnica utilizada:")
    #      )
-    )
+#    )
     file_sources = []
     web_sources = []
 
