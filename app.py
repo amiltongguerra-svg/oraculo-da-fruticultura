@@ -405,6 +405,7 @@ def answer(question):
     inicio = time.time()
     response = client.responses.create(**request)
     answer = response.output_text
+    st.write("DEBUG output_text:", repr(answer))
     tempo_resposta = time.time() - inicio
     st.caption(f"⏱️ Tempo de resposta: {tempo_resposta:.1f} segundos") 
     # Remove marcadores internos de citação que não devem aparecer para o usuário
