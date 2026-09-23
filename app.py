@@ -691,7 +691,7 @@ if question and not had_image:
     with st.chat_message("user"):
         st.markdown(question)
 
-        with st.chat_message("assistant"):
+            with st.chat_message("assistant"):
         try:
             response_text = answer(question)
             st.write("TESTE response_text:", repr(response_text))
