@@ -694,7 +694,7 @@ if question and not had_image:
     with st.chat_message("assistant"):
         try:
             response_text = answer(question)
-            st.write("TESTE response_text:", repr(response_text))
+    
         except Exception as exc:
             response_text = (
                 "Não foi possível consultar a base agora. "
