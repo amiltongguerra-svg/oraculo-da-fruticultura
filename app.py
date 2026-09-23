@@ -693,8 +693,8 @@ if question and not had_image:
 
     with st.chat_message("assistant"):
         try:
-            with st.spinner("Consultando a base técnica privada..."):
-    response_text = answer(question)
+                with st.spinner("Consultando a base técnica privada..."):
+        response_text = answer(question)
         st.write("TESTE response_text:", repr(response_text))
         except Exception as exc:
             response_text = (
@@ -702,7 +702,7 @@ if question and not had_image:
                 f"Detalhe técnico: {exc}"
             )
 
-            st.markdown(response_text)
+        st.markdown(response_text)
                 # audio_resposta = gerar_audio_resposta(response_text)
                 # if audio_resposta:
                 # st.audio(audio_resposta, format="audio/mp3")
