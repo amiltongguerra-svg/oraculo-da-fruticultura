@@ -410,17 +410,17 @@ def answer(question):
     st.caption(f"⏱️ Tempo de resposta: {tempo_resposta:.1f} segundos") 
     # Remove marcadores internos de citação que não devem aparecer para o usuário
 
-    answer = re.sub(
-        r"\ue200filecite\ue202.*?\ue201",
-        "",
-        answer,
-    )
+   # # answer = re.sub(
+   #      r"\ue200filecite\ue202.*?\ue201",
+   #      "",
+   #      answer,
+   #  )
 
-    answer = "\n".join(
-        line for line in answer.splitlines()
-        if not line.strip().lower().startswith(
-            ("consultas utilizadas:", "base técnica utilizada:")
-        )
+   #  answer = "\n".join(
+   #      line for line in answer.splitlines()
+   #      if not line.strip().lower().startswith(
+   # #         ("consultas utilizadas:", "base técnica utilizada:")
+   #      )
     )
     file_sources = []
     web_sources = []
