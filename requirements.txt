@@ -1,6 +1,6 @@
 streamlit>=1.49
 openai>=1.109.0
 python-dotenv>=1.0
-flashk>=3.0
+flask>=3.0
 requests>=2.31
 gunicorn
