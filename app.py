@@ -479,7 +479,7 @@ def answer(question):
                 f"- Fonte pública: [{title}]({url})"
                 for title, url in web_sources
             )
-    st.write("DEBUG antes do return:", repr(answer))
+    
     return answer
       
 with st.sidebar:
