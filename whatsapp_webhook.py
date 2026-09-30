@@ -7,6 +7,16 @@ app = Flask(__name__)
 VERIFY_TOKEN = os.getenv("WHATSAPP_VERIFY_TOKEN")
 WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
 PHONE_NUMBER_ID = os.getenv("WHATSAPP_PHONE_NUMBER_ID")
+@app.route("/privacy", methods=["GET"])
+def privacy():
+    return """
+    <h1>Política de Privacidade - Oráculo da Fruticultura</h1>
+    <p>O Oráculo da Fruticultura utiliza informações enviadas pelo usuário
+    exclusivamente para responder às solicitações realizadas pelo WhatsApp.</p>
+    <p>Os dados não são vendidos nem compartilhados para fins comerciais.</p>
+    <p>Para solicitar exclusão de dados, entre em contato com o responsável
+    pelo Oráculo da Fruticultura.</p>
+    """
 
 @app.route("/webhook", methods=["GET"])
 def verify_webhook():
