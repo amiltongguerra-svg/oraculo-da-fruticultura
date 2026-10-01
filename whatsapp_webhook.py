@@ -36,4 +36,44 @@ def receive_webhook():
     print("Mensagem recebida do WhatsApp:")
     print(data)
 
+    try:
+        value = data["entry"][0]["changes"][0]["value"]
+        messages = value.get("messages", [])
+
+        if messages:
+            message = messages[0]
+            from_number = message["from"]
+            text = message.get("text", {}).get("body", "")
+
+            if text:
+                url = f"https://graph.facebook.com/v26.0/{PHONE_NUMBER_ID}/messages"
+
+                headers = {
+                    "Authorization": f"Bearer {WHATSAPP_TOKEN}",
+                    "Content-Type": "application/json",
+                }
+
+                payload = {
+                    "messaging_product": "whatsapp",
+                    "to": from_number,
+                    "type": "text",
+                    "text": {
+                        "body": "Olá! Sou o Oráculo da Fruticultura. Recebi sua mensagem."
+                    },
+                }
+
+                response = requests.post(
+                    url,
+                    headers=headers,
+                    json=payload,
+                    timeout=30
+                )
+
+                print("Resposta enviada ao WhatsApp:")
+                print(response.status_code)
+                print(response.text)
+
+    except Exception as e:
+        print("Erro ao processar mensagem:", str(e))
+
     return "EVENT_RECEIVED", 200
