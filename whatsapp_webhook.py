@@ -7,6 +7,10 @@ app = Flask(__name__)
 VERIFY_TOKEN = os.getenv("WHATSAPP_VERIFY_TOKEN")
 WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
 PHONE_NUMBER_ID = os.getenv("WHATSAPP_PHONE_NUMBER_ID")
+@app.route("/", methods=["GET"])
+def home():
+    return "Oráculo da Fruticultura - WhatsApp Webhook ativo", 200
+
 @app.route("/privacy", methods=["GET"])
 def privacy():
     return """
