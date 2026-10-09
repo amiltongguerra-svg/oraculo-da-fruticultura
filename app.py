@@ -402,6 +402,7 @@ def answer(question):
         "instructions": SYSTEM,
         "input": question,
         "tools": tools,
+        "include": ["file_search_call.results"],
     }
 
     inicio = time.time()
@@ -425,6 +426,15 @@ def answer(question):
 #    )
     file_sources = []
     web_sources = []
+    
+# Recupera os documentos encontrados na pesquisa privada
+for item in response.output:
+    if getattr(item, "type", "") == "file_search_call":
+        for result in (getattr(item, "results", None) or []):
+            filename = getattr(result, "filename", None)
+            if filename and filename not in file_sources:
+                file_sources.append(filename)
+
 
     for item in response.output:
         for content in getattr(item, "content", []):
