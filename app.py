@@ -377,17 +377,16 @@ def answer(question):
             "EMATER",
         )
     require_public_search = any(
-                term in question.casefold() for term in public_search_terms
-        )
-    
+        term in question.casefold() for term in public_search_terms
+    )
+
     tools = [
         {
             "type": "file_search",
-                "vector_store_ids": [VECTOR_STORE_ID],
-                "max_num_results": TOP_K,
-            }
-        ]
-    
+            "vector_store_ids": [VECTOR_STORE_ID],
+            "max_num_results": TOP_K,
+        }
+    ]
         if require_public_search:
             tools.append(
                 {
