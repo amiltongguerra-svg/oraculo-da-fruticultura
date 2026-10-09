@@ -381,8 +381,8 @@ def answer(question):
         )
     
     tools = [
-            {
-                "type": "file_search",
+        {
+            "type": "file_search",
                 "vector_store_ids": [VECTOR_STORE_ID],
                 "max_num_results": TOP_K,
             }
