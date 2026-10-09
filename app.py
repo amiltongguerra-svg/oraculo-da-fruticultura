@@ -387,8 +387,8 @@ def answer(question):
             "max_num_results": TOP_K,
         }
     ]
-        if require_public_search:
-            tools.append(
+    if require_public_search:
+        tools.append(
                 {
                     "type": "web_search",
                     "filters": {"allowed_domains": PUBLIC_SOURCE_DOMAINS},
